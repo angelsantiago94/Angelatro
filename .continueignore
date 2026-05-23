@@ -1,6 +1,6 @@
 # .continueignore
 android/build/
-desktop/build/
+lwgjl3/build/
 core/build/
 .gradle/
 *.class
