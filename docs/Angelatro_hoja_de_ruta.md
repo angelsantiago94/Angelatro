@@ -7,21 +7,21 @@
 
 ## Fase 0 — Configuración del proyecto
 
-- [ ] Generar proyecto con `gdx-liftoff`: módulos `core`, `desktop`, `android`
-- [ ] Configurar Java 17 en `build.gradle`
-- [ ] Establecer `minSdkVersion 26` y `targetSdkVersion 34` en el módulo Android
-- [ ] Añadir dependencia Gson al módulo `core` (`com.google.code.gson:gson:2.10.1`)
-- [ ] Añadir dependencia JUnit 5 al módulo `core` (solo `testImplementation`)
-- [ ] Verificar que el proyecto compila y lanza la ventana de escritorio vacía
-- [ ] Verificar que un test JUnit vacío pasa sin entorno gráfico
-- [ ] Inicializar repositorio Git y hacer el primer commit
-- [ ] Crear `README.md` con instrucciones básicas de compilación
+- [x] Generar proyecto con `gdx-liftoff`: módulos `core`, `desktop`, `android`
+- [x] Configurar Java 17 en `build.gradle`
+- [x] Establecer `minSdkVersion 26` y `targetSdkVersion 34` en el módulo Android
+- [x] Añadir dependencia Gson al módulo `core` (`com.google.code.gson:gson:2.10.1`)
+- [x] Añadir dependencia JUnit 5 al módulo `core` (solo `testImplementation`)
+- [x] Verificar que el proyecto compila y lanza la ventana de escritorio vacía
+- [x] Verificar que un test JUnit vacío pasa sin entorno gráfico
+- [x] Inicializar repositorio Git y hacer el primer commit
+- [x] Crear `README.md` con instrucciones básicas de compilación
 
 ---
 
 ## Fase 1 — Modelo de cartas y configuración de mazos
 
-**Paquete:** `core/logic/model`
+**Paquete:** `io.angellsan94.angelatro.logic.model`
 
 ### DeckType
 
@@ -50,34 +50,35 @@ MenuSelecciónMazo → elige DeckType
 ```
 
 Tareas:
-- [ ] Crear enum `DeckType` con las 4 constantes iniciales (STANDARD, WEALTHY, POWERED, MULTIBASE)
-  - [ ] Test: `DeckType.STANDARD.getInitialMoney()` → 4
-  - [ ] Test: `DeckType.WEALTHY.getInitialMoney()` → 8
-  - [ ] Test: `DeckType.POWERED.getBonusChips()` → 10
-  - [ ] Test: `DeckType.MULTIBASE.getBonusMult()` → 2
-  - [ ] Test: `DeckType.STANDARD.getBonusChips()` → 0 y `getBonusMult()` → 0
-  - [ ] Test: todos los `DeckType` tienen un `getId()` único y no nulo
-  - [ ] Test: `DeckType.fromId("STANDARD")` devuelve `DeckType.STANDARD` (necesario para deserializar)
-  - [ ] Test: `DeckType.fromId("id_inexistente")` lanza excepción o devuelve `Optional.empty()`
+- [x] Crear enum `DeckType` con las 4 constantes iniciales (STANDARD, WEALTHY, POWERED, MULTIBASE)
+  - [x] Test: `DeckType.STANDARD.getInitialMoney()` → 4
+  - [x] Test: `DeckType.WEALTHY.getInitialMoney()` → 8
+  - [x] Test: `DeckType.POWERED.getBonusChips()` → 10
+  - [x] Test: `DeckType.MULTIBASE.getBonusMult()` → 2
+  - [x] Test: `DeckType.STANDARD.getBonusChips()` → 0 y `getBonusMult()` → 0
+  - [x] Test: todos los `DeckType` tienen un `getId()` único y no nulo
+  - [x] Test: `DeckType.fromId("STANDARD")` devuelve `DeckType.STANDARD` (necesario para deserializar)
+  - [x] Test: `DeckType.fromId("id_inexistente")` lanza excepción o devuelve `Optional.empty()`
 
 ### Modelo de cartas
 
-- [ ] Crear enum `Suit` (HEARTS, DIAMONDS, CLUBS, SPADES)
-- [ ] Crear enum `Rank` con valor en chips por rango (2=2 … As=11)
-  - [ ] Test: `Rank.ACE.getChips()` devuelve 11
-  - [ ] Test: `Rank.KING.getChips()` devuelve 10
-  - [ ] Test: `Rank.TWO.getChips()` devuelve 2
-- [ ] Crear clase `Card(Rank, Suit)`
-  - [ ] Test: `card.getRankChips()` delega en `Rank`
-  - [ ] Test: dos cartas con mismo rango y palo son iguales (`equals`/`hashCode`)
-- [ ] Crear clase `Deck`
-  - [ ] Test: un mazo nuevo tiene exactamente 52 cartas
-  - [ ] Test: el mazo contiene exactamente 4 cartas de cada rango
-  - [ ] Test: `shuffle()` no pierde ni duplica cartas
-  - [ ] Test: `draw()` reduce el tamaño en 1
-  - [ ] Test: `draw()` sobre mazo vacío lanza `DeckEmptyException`
-  - [ ] Test: `isEmpty()` es true cuando no quedan cartas
-- [ ] Crear excepción `DeckEmptyException`
+- [x] Crear excepción `DeckEmptyException` en el paquete io.angellsan94.angelatro.expections
+- [x] Crear enum `Suit` (HEARTS, DIAMONDS, CLUBS, SPADES)
+- [x] Crear enum `Rank` con valor en chips por rango (2=2 … As=11)
+  - [x] Test: `Rank.ACE.getChips()` devuelve 11
+  - [x] Test: `Rank.KING.getChips()` devuelve 10
+  - [x] Test: `Rank.TWO.getChips()` devuelve 2
+- [x] Crear clase `Card(Rank, Suit)`
+  - [x] Test: `card.getRankChips()` delega en `Rank`
+  - [x] Test: dos cartas con mismo rango y palo son iguales (`equals`/`hashCode`)
+- [x] Crear clase `Deck`
+  - [x] Test: un mazo nuevo tiene exactamente 52 cartas
+  - [x] Test: el mazo contiene exactamente 4 cartas de cada rango
+  - [x] Test: `shuffle()` no pierde ni duplica cartas
+  - [x] Test: `draw()` reduce el tamaño en 1
+  - [x] Test: `draw()` sobre mazo vacío lanza `DeckEmptyException`
+  - [x] Test: `isEmpty()` es true cuando no quedan cartas
+
 
 ---
 

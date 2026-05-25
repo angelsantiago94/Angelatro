@@ -1,0 +1,7 @@
+# .continueignore
+android/build/
+lwgjl3/build/
+core/build/
+.gradle/
+*.class
+*.jar
