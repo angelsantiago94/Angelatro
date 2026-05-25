@@ -5,15 +5,20 @@ dependencies {
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
   api "com.google.code.gson:gson:2.10.1"
 
+  // Lombok para reducir código repetitivo en POJOs
+  implementation "org.projectlombok:lombok:1.18.30"
+  annotationProcessor "org.projectlombok:lombok:1.18.30"
+  testAnnotationProcessor "org.projectlombok:lombok:1.18.30"
+
   // JUnit 5 para pruebas unitarias
-  testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter:5.10.2"
-  testImplementation "org.junit.jupiter:junit-jupiter-params:5"
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
 }
 jar {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-tasks.named('test') {
+test {
   useJUnitPlatform()
 }
