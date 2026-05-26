@@ -1,6 +1,8 @@
 package io.angellsan94.angelatro.logic.game;
 
 import io.angellsan94.angelatro.exceptions.InvalidPlayAreaSizeException;
+import io.angellsan94.angelatro.logic.jokers.Joker;
+import io.angellsan94.angelatro.logic.jokers.PairChipsEffect;
 import io.angellsan94.angelatro.logic.model.Card;
 import io.angellsan94.angelatro.logic.model.DeckType;
 import io.angellsan94.angelatro.logic.model.Rank;
@@ -235,5 +237,109 @@ class ScoreEngineTest {
         // mult = 2
         // score = 40 * 2 = 80
         assertEquals(80, score);
+    }
+
+    // ==================== INTEGRACIÓN CON JOKERS ====================
+
+    @Test
+    @DisplayName("Pareja nivel 0 con J001 activo → chips = 20 + 20 + 20 + 30 = 90, mult = 2 → 180")
+    void testPairWithJ001Active() {
+        List<Card> playedCards = List.of(
+                new Card(Rank.REY, Suit.HEARTS),
+                new Card(Rank.REY, Suit.DIAMONDS)
+        );
+        List<Card> scoringCards = List.of(
+                new Card(Rank.REY, Suit.HEARTS),
+                new Card(Rank.REY, Suit.DIAMONDS)
+        );
+
+        HandEvaluationContext context = new HandEvaluationContext(
+                HandType.PAREJA,
+                playedCards,
+                scoringCards,
+                levelManager,
+                DeckType.STANDARD,
+                null,
+                null
+        );
+
+        PairChipsEffect effect = new PairChipsEffect();
+        Joker joker = new Joker("J001", "Matador", "+30 chips si la mano es PAREJA", 4,
+                io.angellsan94.angelatro.logic.jokers.Rarity.COMMON, effect);
+        List<Joker> activeJokers = List.of(joker);
+
+        int score = scoreEngine.calculateTotalScore(context, activeJokers);
+        // chips = 20 (base) + 10 + 10 (reyes) + 30 (joker) = 70
+        // mult = 2
+        // score = 70 * 2 = 140
+        assertEquals(140, score);
+    }
+
+    @Test
+    @DisplayName("El orden de aplicación es chips primero, luego mult")
+    void testChipsAppliedBeforeMult() {
+        List<Card> playedCards = List.of(
+                new Card(Rank.AS, Suit.HEARTS),
+                new Card(Rank.REY, Suit.HEARTS)
+        );
+        List<Card> scoringCards = List.of(
+                new Card(Rank.AS, Suit.HEARTS),
+                new Card(Rank.REY, Suit.HEARTS)
+        );
+
+        HandEvaluationContext context = new HandEvaluationContext(
+                HandType.PAREJA,
+                playedCards,
+                scoringCards,
+                levelManager,
+                DeckType.STANDARD,
+                null,
+                null
+        );
+
+        PairChipsEffect chipsEffect = new PairChipsEffect();
+        Joker chipsJoker = new Joker("J001", "Matador", "+30 chips", 4,
+                io.angellsan94.angelatro.logic.jokers.Rarity.COMMON, chipsEffect);
+
+        io.angellsan94.angelatro.logic.jokers.HeartMultEffect multEffect = new io.angellsan94.angelatro.logic.jokers.HeartMultEffect();
+        Joker multJoker = new Joker("J002", "Corazón Ardiente", "+2 mult por HEARTS", 4,
+                io.angellsan94.angelatro.logic.jokers.Rarity.COMMON, multEffect);
+
+        List<Joker> activeJokers = List.of(chipsJoker, multJoker);
+
+        int score = scoreEngine.calculateTotalScore(context, activeJokers);
+        // chips = 20 (base) + 11 + 10 (rey) + 30 (joker) = 71
+        // mult = 2 + 2*2 (2 corazones) = 6
+        // score = 71 * 6 = 426
+        assertEquals(426, score);
+    }
+
+    @Test
+    @DisplayName("Con 0 jokers activos el resultado es el mismo que sin jokers")
+    void testZeroJokersSameAsNoJokers() {
+        List<Card> playedCards = List.of(
+                new Card(Rank.REY, Suit.HEARTS),
+                new Card(Rank.REY, Suit.DIAMONDS)
+        );
+        List<Card> scoringCards = List.of(
+                new Card(Rank.REY, Suit.HEARTS),
+                new Card(Rank.REY, Suit.DIAMONDS)
+        );
+
+        HandEvaluationContext context = new HandEvaluationContext(
+                HandType.PAREJA,
+                playedCards,
+                scoringCards,
+                levelManager,
+                DeckType.STANDARD,
+                null,
+                null
+        );
+
+        int scoreWithNull = scoreEngine.calculateTotalScore(context, null);
+        int scoreWithEmpty = scoreEngine.calculateTotalScore(context, List.of());
+
+        assertEquals(scoreWithNull, scoreWithEmpty);
+        assertEquals(80, scoreWithNull);
     }
 }

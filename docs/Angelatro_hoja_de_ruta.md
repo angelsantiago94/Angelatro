@@ -178,50 +178,50 @@ Tareas:
 
 **Paquete:** `core/io/angellsan94/angelatro/logic/economy`
 
-- [ ] Crear clase `Wallet`
-  - [ ] Test: `new Wallet(DeckType.STANDARD)` → saldo inicial 4
-  - [ ] Test: `new Wallet(DeckType.WEALTHY)` → saldo inicial 8
-  - [ ] Test: `spend(amount)` reduce el saldo
-  - [ ] Test: `spend()` con saldo insuficiente lanza `NotEnoughMoneyException`
-  - [ ] Test: `earn(amount)` aumenta el saldo
-  - [ ] Test: `getAmount()` devuelve el saldo actual
-- [ ] Crear clase `EconomyCalculator` (calcula ganancias al final de ronda)
-  - [ ] Test: 2 manos restantes + 1 descarte restante + 10 monedas → ganancia = 2*2 + 1*1 + floor(10/5) = 7
-  - [ ] Test: interés máximo de 5 monedas (25+ monedas guardadas)
-  - [ ] Test: el interés se aplica sobre el saldo **antes** de sumar el bono de manos/descartes
-- [ ] Crear excepción `NotEnoughMoneyException`
+- [x] Crear clase `Wallet`
+  - [x] Test: `new Wallet(DeckType.STANDARD)` → saldo inicial 4
+  - [x] Test: `new Wallet(DeckType.WEALTHY)` → saldo inicial 8
+  - [x] Test: `spend(amount)` reduce el saldo
+  - [x] Test: `spend()` con saldo insuficiente lanza `NotEnoughMoneyException`
+  - [x] Test: `earn(amount)` aumenta el saldo
+  - [x] Test: `getAmount()` devuelve el saldo actual
+- [x] Crear clase `EconomyCalculator` (calcula ganancias al final de ronda)
+  - [x] Test: 2 manos restantes + 1 descarte restante + 10 monedas → ganancia = 2*2 + 1*1 + floor(10/5) = 7
+  - [x] Test: interés máximo de 5 monedas (25+ monedas guardadas)
+  - [x] Test: el interés se aplica sobre el saldo **antes** de sumar el bono de manos/descartes
+- [x] Crear excepción `NotEnoughMoneyException`
 
 ---
 
 ## Fase 6 — Jokers
 
-**Paquete:** `core/logic/jokers`
+**Paquete:** `core/io/angellsan94/angelatro/logic/jokers`
 
-- [ ] Crear interfaz `JokerEffect`
-- [ ] Crear clase `Joker` (id, name, description, price, rarity, effect)
-- [ ] Crear enum `Rarity` (COMMON, UNCOMMON, RARE) con probabilidades y precios
-- [ ] Crear clase `JokerManager`
-  - [ ] Test: límite de 6 jokers activos
-  - [ ] Test: `add()` con 6 jokers lanza `JokerLimitExceededException`
-  - [ ] Test: `sell(joker)` elimina el joker y devuelve `floor(precio / 2)` a la wallet
-  - [ ] Test: `sell()` de un joker no activo lanza excepción
-- [ ] Implementar joker **J001 – Matador** (`PairChipsEffect`)
-  - [ ] Test: +30 chips si la mano es PAREJA
-  - [ ] Test: 0 chips extra si la mano no es PAREJA
-- [ ] Implementar joker **J002 – Corazón Ardiente** (`HeartMultEffect`)
-  - [ ] Test: +2 mult por cada carta de HEARTS en `scoringCards`
-  - [ ] Test: 0 cartas de HEARTS → mult sin cambio
-- [ ] Implementar joker **J003 – Memorioso** (`CumulativeMultEffect`)
-  - [ ] Test: +1 mult por cada vez que se ha jugado esa mano en la partida
-  - [ ] Test: primera vez que se juega → +0 mult adicional (si es la primera)
-- [ ] Implementar joker **J004 – Escalador** (`StairChipsEffect`)
-  - [ ] Test: +15 chips si la mano es ESCALERA o superior
-  - [ ] Test: PAREJA no activa el efecto
-- [ ] Integrar jokers en `ScoreEngine`
-  - [ ] Test: Pareja nivel 0 con J001 activo → chips = 20 + 20 + 20 + 30 = 90, mult = 2 → 180
-  - [ ] Test: el orden de aplicación es chips primero, luego mult
-  - [ ] Test: con 0 jokers activos el resultado es el mismo que sin jokers
-- [ ] Crear excepción `JokerLimitExceededException`
+- [x] Crear interfaz `JokerEffect`
+- [x] Crear clase `Joker` (id, name, description, price, rarity, effect)
+- [x] Crear enum `Rarity` (COMMON, UNCOMMON, RARE) con probabilidades y precios
+- [x] Crear clase `JokerManager`
+  - [x] Test: límite de 6 jokers activos
+  - [x] Test: `add()` con 6 jokers lanza `JokerLimitExceededException`
+  - [x] Test: `sell(joker)` elimina el joker y devuelve `floor(precio / 2)` a la wallet
+  - [x] Test: `sell()` de un joker no activo lanza excepción
+- [x] Implementar joker **J001 – Matador** (`PairChipsEffect`)
+  - [x] Test: +30 chips si la mano es PAREJA
+  - [x] Test: 0 chips extra si la mano no es PAREJA
+- [x] Implementar joker **J002 – Corazón Ardiente** (`HeartMultEffect`)
+  - [x] Test: +2 mult por cada carta de HEARTS en `scoringCards`
+  - [x] Test: 0 cartas de HEARTS → mult sin cambio
+- [x] Implementar joker **J003 – Memorioso** (`CumulativeMultEffect`)
+  - [x] Test: +1 mult por cada vez que se ha jugado esa mano en la partida
+  - [x] Test: primera vez que se juega → +0 mult adicional (si es la primera)
+- [x] Implementar joker **J004 – Escalador** (`StairChipsEffect`)
+  - [x] Test: +15 chips si la mano es ESCALERA o superior
+  - [x] Test: PAREJA no activa el efecto
+- [x] Integrar jokers en `ScoreEngine`
+  - [x] Test: Pareja nivel 0 con J001 activo → chips = 20 + 20 + 20 + 30 = 90, mult = 2 → 180
+  - [x] Test: el orden de aplicación es chips primero, luego mult
+  - [x] Test: con 0 jokers activos el resultado es el mismo que sin jokers
+- [x] Crear excepción `JokerLimitExceededException`
 
 ---
 

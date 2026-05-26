@@ -1,6 +1,7 @@
 package io.angellsan94.angelatro.logic.game;
 
 import io.angellsan94.angelatro.exceptions.InvalidPlayAreaSizeException;
+import io.angellsan94.angelatro.logic.jokers.Joker;
 
 import java.util.List;
 
@@ -10,10 +11,12 @@ import java.util.List;
  * Calcula la puntuación total siguiendo el orden especificado:
  * 1. Chips base de la mano
  * 2. Chips individuales de las cartas puntuadas
- * 3. Modificadores de chips de jokers (futuro)
- * 4. Mult base de la mano
- * 5. Modificadores de mult de jokers (futuro)
- * 6. Puntuación final = chips * mult
+ * 3. Bonus de chips del DeckType
+ * 4. Modificadores de chips de jokers
+ * 5. Mult base de la mano
+ * 6. Bonus de mult del DeckType
+ * 7. Modificadores de mult de jokers
+ * 8. Puntuación final = chips * mult
  * </p>
  *
  * @author angellsan94
@@ -26,11 +29,11 @@ public class ScoreEngine {
      * Calcula la puntuación total de una mano.
      *
      * @param context     el contexto de evaluación de la mano
-     * @param activeJokers la lista de jokers activos (null si no hay jokers)
+     * @param activeJokers la lista de jokers activos (null o vacío si no hay jokers)
      * @return la puntuación total
      * @throws InvalidPlayAreaSizeException si playedCards está vacía
      */
-    public int calculateTotalScore(HandEvaluationContext context, List<?> activeJokers) {
+    public int calculateTotalScore(HandEvaluationContext context, List<Joker> activeJokers) {
         if (context.playedCards().isEmpty()) {
             throw new InvalidPlayAreaSizeException("El PlayArea no puede estar vacío");
         }
@@ -46,7 +49,12 @@ public class ScoreEngine {
         // 3. Bonus de chips del DeckType
         chips += context.deckType().getBonusChips();
 
-        // 4. Modificadores de chips de jokers (futuro)
+        // 4. Modificadores de chips de jokers
+        if (activeJokers != null) {
+            for (var joker : activeJokers) {
+                chips = joker.getEffect().modifyChips(chips, context);
+            }
+        }
 
         // 5. Mult base de la mano
         int mult = context.levelManager().getMult(context.handType());
@@ -54,7 +62,12 @@ public class ScoreEngine {
         // 6. Bonus de mult del DeckType
         mult += context.deckType().getBonusMult();
 
-        // 7. Modificadores de mult de jokers (futuro)
+        // 7. Modificadores de mult de jokers
+        if (activeJokers != null) {
+            for (var joker : activeJokers) {
+                mult = joker.getEffect().modifyMult(mult, context);
+            }
+        }
 
         // 8. Puntuación final
         return chips * mult;
