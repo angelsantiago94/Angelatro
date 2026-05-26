@@ -168,22 +168,26 @@ Cada `HandType` tiene un nivel que empieza en 0. Al comprar una mejora, sube 1.
 
 **Tabla de parámetros:**
 
-| HandType            | chipsInicial | multInicial | incrementoChips | incrementoMult |
-|---------------------|--------------|-------------|-----------------|----------------|
-| Carta Alta          | 5            | 1           | 5               | 0.5 (piso por nivel) |
-| Pareja              | 20           | 2           | 10              | 1              |
-| Doble Pareja        | 30           | 2           | 15              | 1              |
-| Trío                | 40           | 3           | 20              | 1              |
-| Escalera            | 30           | 4           | 15              | 2              |
-| Color               | 35           | 4           | 15              | 1              |
-| Full House          | 40           | 4           | 20              | 2              |
-| Póker               | 60           | 7           | 30              | 3              |
-| Escalera de Color   | 100          | 8           | 50              | 4              |
-| Escalera Real       | 100          | 8           | 50              | 4              | `[NUEVO]`
+| HandType          | chipsInicial | multInicial | incrementoChips | incrementoMult |
+|-------------------|--------------|-------------|-----------------|----------------|
+| Carta Alta        | 5            | 1           | 10              | 1              |
+| Pareja            | 20           | 2           | 15              | 1              |
+| Doble Pareja      | 30           | 2           | 20              | 1              |
+| Trío              | 40           | 3           | 20              | 2              |
+| Escalera          | 30           | 4           | 30              | 3              |
+| Color             | 35           | 4           | 30              | 3              |
+| Full House        | 40           | 4           | 25              | 2              |
+| Póker             | 60           | 7           | 30              | 3              |
+| Escalera de Color | 100          | 8           | 40              | 4              |
+| Escalera Real     | 100          | 8           | 40              | 4              | `[NUEVO]`
+| Repoker           | 120          | 12          | 35              | 3              |
+| Full de color     | 140          | 14          | 40              | 4              |
+| 5 de color        | 160          | 16          | 50              | 3              |
+
 
 > **Escalera Real `[NUEVO]`:** secuencia 10-J-Q-K-A del mismo palo. Se evalúa **antes** que la Escalera de Color en `HandEvaluator`. Mismos valores que Escalera de Color (se diferencia solo por nombre y logros).
 
-**Ejemplo:** Pareja nivel 3 → Chips = 20 + 10×3 = 50, Mult = 2 + 1×3 = 5 → base = 250 (antes de chips individuales y jokers).
+**Ejemplo:** Pareja nivel 3 → Chips = 20 + 15×3 = 65, Mult = 2 + 1×3 = 5 → base = 325 (antes de chips individuales y jokers).
 
 ### 3.8. Orden de cálculo de puntuación en ScoreEngine `[NUEVO]`
 
