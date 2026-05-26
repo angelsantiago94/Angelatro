@@ -84,7 +84,7 @@ Tareas:
 
 ## Fase 2 — Evaluador de manos
 
-**Paquete:** `core/io/angellsan94/angelatrologic/game`
+**Paquete:** `core/io/angellsan94/angelatro/logic/game`
 
 - [x] Crear enum `HandType` con los 10 tipos (Carta Alta … Escalera Real)
 - [x] Crear clase `HandEvaluator`
