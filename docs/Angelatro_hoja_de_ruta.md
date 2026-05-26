@@ -227,14 +227,14 @@ Tareas:
 
 ## Fase 7 — Generador de tienda
 
-**Paquete:** `core/logic/economy`
+**Paquete:** `core/io/angellsan94/angelatro/logic/economy`
 
-- [ ] Crear clase `ShopGenerator`
-  - [ ] Test: genera exactamente 2 jokers por visita
-  - [ ] Test: los jokers generados pertenecen al pool desbloqueado
-  - [ ] Test: la distribución de rareza respeta las probabilidades (test estadístico con N grande)
-  - [ ] Test: genera exactamente 2 mejoras de mano aleatorias
-  - [ ] Test: el precio de una mejora de mano es 6 monedas
+- [x] Crear clase `ShopGenerator`
+  - [x] Test: genera exactamente 2 jokers por visita
+  - [x] Test: los jokers generados pertenecen al pool desbloqueado
+  - [x] Test: la distribución de rareza respeta las probabilidades (test estadístico con N grande)
+  - [x] Test: genera exactamente 2 mejoras de mano aleatorias
+  - [x] Test: el precio de una mejora de mano es 6 monedas
 
 ---
 
