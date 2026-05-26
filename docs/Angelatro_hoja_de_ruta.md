@@ -84,38 +84,38 @@ Tareas:
 
 ## Fase 2 — Evaluador de manos
 
-**Paquete:** `core/logic/game`
+**Paquete:** `core/io/angellsan94/angelatro/logic/game`
 
-- [ ] Crear enum `HandType` con los 10 tipos (Carta Alta … Escalera Real)
-- [ ] Crear clase `HandEvaluator`
+- [x] Crear enum `HandType` con los 10 tipos (Carta Alta … Escalera Real)
+- [x] Crear clase `HandEvaluator`
   - **Carta Alta**
-    - [ ] Test: 5 cartas sin combinación → CARTA_ALTA
+    - [x] Test: 5 cartas sin combinación → CARTA_ALTA
   - **Pareja**
-    - [ ] Test: exactamente dos cartas del mismo rango → PAREJA
+    - [x] Test: exactamente dos cartas del mismo rango → PAREJA
   - **Doble Pareja**
-    - [ ] Test: dos pares distintos → DOBLE_PAREJA
+    - [x] Test: dos pares distintos → DOBLE_PAREJA
   - **Trío**
-    - [ ] Test: tres cartas del mismo rango → TRIO
+    - [x] Test: tres cartas del mismo rango → TRIO
   - **Escalera**
-    - [ ] Test: 5 rangos consecutivos de distintos palos → ESCALERA
-    - [ ] Test: escalera con As bajo (A-2-3-4-5) → ESCALERA
-    - [ ] Test: escalera con As alto (10-J-Q-K-A) se evalúa después como Escalera Real si mismo palo
+    - [x] Test: 5 rangos consecutivos de distintos palos → ESCALERA
+    - [x] Test: escalera con As bajo (A-2-3-4-5) → ESCALERA
+    - [x] Test: escalera con As alto (10-J-Q-K-A) se evalúa después como Escalera Real si mismo palo
   - **Color**
-    - [ ] Test: 5 cartas del mismo palo sin escalera → COLOR
+    - [x] Test: 5 cartas del mismo palo sin escalera → COLOR
   - **Full House**
-    - [ ] Test: trío + pareja → FULL_HOUSE
+    - [x] Test: trío + pareja → FULL_HOUSE
   - **Póker**
-    - [ ] Test: cuatro cartas del mismo rango → POKER
+    - [x] Test: cuatro cartas del mismo rango → POKER
   - **Escalera de Color**
-    - [ ] Test: 5 consecutivos del mismo palo (no 10-J-Q-K-A) → ESCALERA_DE_COLOR
+    - [x] Test: 5 consecutivos del mismo palo (no 10-J-Q-K-A) → ESCALERA_DE_COLOR
   - **Escalera Real**
-    - [ ] Test: 10-J-Q-K-A del mismo palo → ESCALERA_REAL
+    - [x] Test: 10-J-Q-K-A del mismo palo → ESCALERA_REAL
   - **Prioridad**
-    - [ ] Test: Full House no se confunde con Trío
-    - [ ] Test: Escalera Real tiene prioridad sobre Escalera de Color
-    - [ ] Test: Color tiene prioridad sobre Escalera si no son consecutivos
-- [ ] `evaluate()` devuelve también las `scoringCards` (cartas que forman la mano)
-  - [ ] Test: en una Pareja de 7 dentro de 5 cartas, `scoringCards` contiene solo las dos 7
+    - [x] Test: Full House no se confunde con Trío
+    - [x] Test: Escalera Real tiene prioridad sobre Escalera de Color
+    - [x] Test: Color tiene prioridad sobre Escalera si no son consecutivos
+- [x] `evaluate()` devuelve también las `scoringCards` (cartas que forman la mano)
+  - [x] Test: en una Pareja de 7 dentro de 5 cartas, `scoringCards` contiene solo las dos 7
 
 ---
 

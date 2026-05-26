@@ -18,73 +18,73 @@ public enum Rank {
     /**
      * As
      */
-    AS(11),
+    AS(11, 14),
 
     /**
      * Rey
      */
-    REY(10),
+    REY(10, 13),
 
     /**
      * Reina
      */
-    REINA(10),
+    REINA(10, 12),
 
     /**
      * Sota
      */
-    JOTA(10),
+    JOTA(10, 11),
 
     /**
      * 10
      */
-    DIEZ(10),
+    DIEZ(10, 10),
 
     /**
      * 9
      */
-    NUEVE(9),
+    NUEVE(9, 9),
 
     /**
      * 8
      */
-    OCHO(8),
+    OCHO(8, 8),
 
     /**
      * 7
      */
-    SIETE(7),
+    SIETE(7, 7),
 
     /**
      * 6
      */
-    SEIS(6),
+    SEIS(6, 6),
 
     /**
      * 5
      */
-    CINCO(5),
+    CINCO(5, 5),
 
     /**
      * 4
      */
-    CUATRO(4),
+    CUATRO(4, 4),
 
     /**
      * 3
      */
-    TRES(3),
+    TRES(3, 3),
 
     /**
      * 2
      */
-    DOS(2);
+    DOS(2, 2);
 
     /**
      * Lista de todos los rangos ordenados por valor.
      */
-    private static final List<Rank> RANKS_BY_VALUE = Arrays.stream(values())
-            .sorted((a, b) -> Integer.compare(b.value, a.value))
+    private static final List<Rank> RANKS_BY_ORDER= Arrays.stream(values())
+            .sorted((a, b) -> Integer.compare(b.order, a.order))
             .toList();
 
     /**
@@ -93,12 +93,18 @@ public enum Rank {
     private final int value;
 
     /**
+     * Valor numérico del rango.
+     */
+    private final int order;
+
+    /**
      * Constructor de enum.
      *
      * @param value el valor en chips
      */
-    Rank(int value) {
+    Rank(int value, int order) {
         this.value = value;
+        this.order=order;
     }
 
     /**
@@ -111,12 +117,21 @@ public enum Rank {
     }
 
     /**
+     * Obtiene el orden numérico del rango para póker.
+     *
+     * @return el orden numérico
+     */
+    public int getOrder() {
+        return order;
+    }
+
+    /**
      * Obtiene el rango con el mayor valor.
      *
      * @return el rango con el mayor valor
      */
     public static Rank getHighestRank() {
-        return RANKS_BY_VALUE.get(0);
+        return RANKS_BY_ORDER.get(0);
     }
 
     /**
@@ -125,7 +140,7 @@ public enum Rank {
      * @return el rango con el menor valor
      */
     public static Rank getLowestRank() {
-        return RANKS_BY_VALUE.get(RANKS_BY_VALUE.size() - 1);
+        return RANKS_BY_ORDER.get(RANKS_BY_ORDER.size() - 1);
     }
 
     /**
