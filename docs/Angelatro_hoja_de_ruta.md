@@ -121,54 +121,54 @@ Tareas:
 
 ## Fase 3 — Motor de puntuación y niveles de mano
 
-**Paquete:** `core/logic/game`
+**Paquete:** `core/io/angellsan94/angelatro/logic/game`
 
-- [ ] Crear clase `HandLevelManager`
-  - [ ] Test: nivel inicial de cualquier mano es 0
-  - [ ] Test: `getChips(PAREJA)` nivel 0 → 20
-  - [ ] Test: `getChips(PAREJA)` nivel 3 → 50
-  - [ ] Test: `getMult(PAREJA)` nivel 3 → 5
-  - [ ] Test: `getChips(CARTA_ALTA)` nivel 0 → 5
-  - [ ] Test: `getMult(CARTA_ALTA)` nivel 1 → 1 (piso de 0.5)
-  - [ ] Test: `getMult(CARTA_ALTA)` nivel 2 → 2
-  - [ ] Test: `upgrade(handType)` incrementa el nivel en 1
-- [ ] Crear clase `HandEvaluationContext`
+- [x] Crear clase `HandLevelManager`
+  - [x] Test: nivel inicial de cualquier mano es 0
+  - [x] Test: `getChips(PAREJA)` nivel 0 → 20
+  - [x] Test: `getChips(PAREJA)` nivel 3 → 65
+  - [x] Test: `getMult(PAREJA)` nivel 3 → 5
+  - [x] Test: `getChips(CARTA_ALTA)` nivel 0 → 5
+  - [x] Test: `getMult(CARTA_ALTA)` nivel 1 → 2
+  - [x] Test: `getMult(CARTA_ALTA)` nivel 2 → 3
+  - [x] Test: `upgrade(handType)` incrementa el nivel en 1
+- [x] Crear clase `HandEvaluationContext`
   - Campos: `handType`, `playedCards`, `scoringCards`, `levelManager`, `globalStats`, `wallet`
-- [ ] Crear clase `ScoreEngine` (sin jokers aún)
-  - [ ] Test: Carta Alta con As, DeckType STANDARD → chips = 5 + 11 = 16, mult = 1 → score = 16
-  - [ ] Test: Carta Alta con As, DeckType POWERED (bonusChips=10) → chips = 5 + 11 + 10 = 26, mult = 1 → score = 26
-  - [ ] Test: Pareja de Reyes nivel 0, DeckType MULTIBASE (bonusMult=2) → chips = 20+10+10 = 40, mult = 2+2 = 4 → score = 160
-  - [ ] Test: Pareja de Reyes nivel 3, DeckType STANDARD → chips = 50+10+10 = 70, mult = 5 → score = 350
+- [x] Crear clase `ScoreEngine` (sin jokers aún)
+  - [x] Test: Carta Alta con As, DeckType STANDARD → chips = 5 + 11 = 16, mult = 1 → score = 16
+  - [x] Test: Carta Alta con As, DeckType POWERED (bonusChips=10) → chips = 5 + 11 + 10 = 26, mult = 1 → score = 26
+  - [x] Test: Pareja de Reyes nivel 0, DeckType MULTIBASE (bonusMult=2) → chips = 20+10+10 = 40, mult = 2+2 = 4 → score = 160
+  - [x] Test: Pareja de Reyes nivel 3, DeckType STANDARD → chips = 50+10+10 = 70, mult = 5 → score = 350
   - [ ] Test: los bonos de `DeckType` se aplican **antes** que los jokers (orden: base + bonusDeck + jokers)
-  - [ ] Test: solo las `scoringCards` aportan chips individuales, no todas las del PlayArea
-  - [ ] Test: `InvalidPlayAreaSizeException` si `playedCards` está vacía
-- [ ] Crear excepción `InvalidPlayAreaSizeException`
+  - [x] Test: solo las `scoringCards` aportan chips individuales, no todas las del PlayArea
+  - [x] Test: `InvalidPlayAreaSizeException` si `playedCards` está vacía
+- [x] Crear excepción `InvalidPlayAreaSizeException`
 
 ---
 
 ## Fase 4 — Gestión de la ronda
 
-**Paquete:** `core/logic/game`
+**Paquete:** `core/io/angellsan94/angelatro/logic/game`
 
-- [ ] Crear clase `PlayerHand`
-  - [ ] Test: capacidad máxima de 8 cartas
-  - [ ] Test: `select(card)` marca la carta como seleccionada
-  - [ ] Test: `deselect(card)` la desmarca
-  - [ ] Test: `getSelected()` devuelve solo las marcadas
-  - [ ] Test: `lanza HandLimitExceededException` si se intentan añadir más de 5 cartas al `PlayArea`
-- [ ] Crear clase `RoundManager`
-  - [ ] Test: al iniciar ronda, manos = 3 y descartes = 3
-  - [ ] Test: `playHand()` reduce manos en 1
-  - [ ] Test: `discard()` reduce descartes en 1
-  - [ ] Test: `playHand()` con 0 manos lanza excepción
-  - [ ] Test: `discard()` con 0 descartes lanza excepción
-  - [ ] Test: `targetScore` ronda 0 → 300
-  - [ ] Test: `targetScore` ronda 1 → 480 (round(300 * 1.6^1))
-  - [ ] Test: `targetScore` ronda 3 → 1229 (round(300 * 1.6^3))
-  - [ ] Test: `isRoundWon()` true si score >= targetScore
-  - [ ] **Condición de derrota 1:** `isGameOver()` true si manos = 0 y score < targetScore
-  - [ ] **Condición de derrota 2:** `isGameOver()` true si mano vacía Y mazo vacío (con manos restantes)
-  - [ ] Test: reponer mazo al inicio de cada ronda (52 cartas barajadas)
+- [x] Crear clase `PlayerHand`
+  - [x] Test: capacidad máxima de 8 cartas
+  - [x] Test: `select(card)` marca la carta como seleccionada
+  - [x] Test: `deselect(card)` la desmarca
+  - [x] Test: `getSelected()` devuelve solo las marcadas
+  - [x] Test: `lanza HandLimitExceededException` si se intentan añadir más de 5 cartas al `PlayArea`
+- [x] Crear clase `RoundManager`
+  - [x] Test: al iniciar ronda, manos = 3 y descartes = 3
+  - [x] Test: `playHand()` reduce manos en 1
+  - [x] Test: `discard()` reduce descartes en 1
+  - [x] Test: `playHand()` con 0 manos lanza excepción
+  - [x] Test: `discard()` con 0 descartes lanza excepción
+  - [x] Test: `targetScore` ronda 0 → 300
+  - [x] Test: `targetScore` ronda 1 → 480 (round(300 * 1.6^1))
+  - [x] Test: `targetScore` ronda 3 → 1229 (round(300 * 1.6^3))
+  - [x] Test: `isRoundWon()` true si score >= targetScore
+  - [x] **Condición de derrota 1:** `isGameOver()` true si manos = 0 y score < targetScore
+  - [x] **Condición de derrota 2:** `isGameOver()` true si mano vacía Y mazo vacío (con manos restantes)
+  - [x] Test: reponer mazo al inicio de cada ronda (52 cartas barajadas)
   - [ ] Test: al robar tras jugar, las cartas del `PlayArea` van al descarte (no vuelven al mazo)
   - [ ] Test: al agotar el mazo, no se recicla el descarte
 
@@ -176,7 +176,7 @@ Tareas:
 
 ## Fase 5 — Economía
 
-**Paquete:** `core/logic/economy`
+**Paquete:** `core/io/angellsan94/angelatro/logic/economy`
 
 - [ ] Crear clase `Wallet`
   - [ ] Test: `new Wallet(DeckType.STANDARD)` → saldo inicial 4
