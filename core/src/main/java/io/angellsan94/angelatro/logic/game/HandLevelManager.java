@@ -47,6 +47,15 @@ public class HandLevelManager {
     }
 
     /**
+     * Obtiene el mapa de niveles de todas las manos.
+     *
+     * @return el mapa inmutable de niveles
+     */
+    public Map<HandType, Integer> getHandLevels() {
+        return new EnumMap<>(levels);
+    }
+
+    /**
      * Calcula los chips base para un tipo de mano según su nivel actual.
      *
      * @param handType el tipo de mano

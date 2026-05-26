@@ -266,18 +266,18 @@ Tareas:
 
 ## Fase 9 — Integración de lógica (GameSession)
 
-**Paquete:** `core/logic/game`
+**Paquete:** `core/io/angellsan94/angelatro/logic/game`
 
-- [ ] Crear clase `GameSession` que orquesta todos los sistemas
-  - [ ] Test: `startNewGame(DeckType.WEALTHY)` → `wallet.getAmount()` = 8
-  - [ ] Test: `startNewGame(DeckType.POWERED)` → `scoreEngine.getBonusChips()` = 10
-  - [ ] Test: `startNewGame(DeckType.MULTIBASE)` → `scoreEngine.getBonusMult()` = 2
-  - [ ] Test: `startNewGame()` inicializa mazo completo (52 cartas), manos = 3, descartes = 3, ronda = 0
-  - [ ] Test: flujo completo de ronda ganada → tienda → siguiente ronda incrementa `roundNumber`
-  - [ ] Test: flujo de derrota por manos agotadas → llama a `StatsManager.updateAfterGame()`
-  - [ ] Test: flujo de derrota por cartas agotadas → llama a `StatsManager.updateAfterGame()`
-  - [ ] Test: guardar automáticamente al salir de la tienda llama a `SaveManager.save()`
-- [ ] Ejecutar suite completa de tests y verificar cobertura > 80% en `logic/`
+- [x] Crear clase `GameSession` que orquesta todos los sistemas
+  - [x] Test: `startNewGame(DeckType.WEALTHY)` → `wallet.getAmount()` = 8
+  - [x] Test: `startNewGame(DeckType.POWERED)` → `scoreEngine.getBonusChips()` = 10
+  - [x] Test: `startNewGame(DeckType.MULTIBASE)` → `scoreEngine.getBonusMult()` = 2
+  - [x] Test: `startNewGame()` inicializa mazo completo (52 cartas), manos = 3, descartes = 3, ronda = 0
+  - [x] Test: flujo completo de ronda ganada → tienda → siguiente ronda incrementa `roundNumber`
+  - [x] Test: flujo de derrota por manos agotadas → llama a `StatsManager.updateAfterGame()`
+  - [x] Test: flujo de derrota por cartas agotadas → llama a `StatsManager.updateAfterGame()`
+  - [x] Test: guardar automáticamente al salir de la tienda llama a `SaveManager.save()`
+- [x] Ejecutar suite completa de tests y verificar cobertura > 80% en `logic/`
 
 ---
 
