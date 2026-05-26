@@ -240,27 +240,27 @@ Tareas:
 
 ## Fase 8 — Persistencia
 
-**Paquete:** `core/logic/persistence`
+**Paquete:** `core/io/angellsan94/angelatro/logic/persistence`
 
-- [ ] Crear clase `SaveManager`
-  - [ ] Test: `save(gameSession)` escribe un JSON válido que incluye el `id` del `DeckType` activo
-  - [ ] Test: `load()` reconstruye la sesión exactamente igual (roundNumber, deckType, wallet, jokers activos, niveles de mano)
-  - [ ] Test: `load()` usa `DeckType.fromId()` para reconstruir el mazo — no hardcodea valores
-  - [ ] Test: `load()` cuando no existe archivo devuelve `Optional.empty()`
-  - [ ] Test: `delete()` elimina el archivo de guardado
-- [ ] Crear clase `StatsManager`
-  - [ ] Test: `updateAfterGame()` incrementa `gamesPlayed`
-  - [ ] Test: `updateAfterGame()` actualiza `bestRound` solo si la ronda actual es mayor
-  - [ ] Test: `updateAfterGame()` acumula `roundsCompleted`
-  - [ ] Test: `updateAfterGame()` actualiza `bestScore` solo si es mayor
-  - [ ] Test: `updateAfterGame()` suma a `handsPlayedByType`
-- [ ] Crear clase `UnlockService`
-  - [ ] Test: logro `REACH_ROUND_5` se concede cuando `bestRound >= 4`
-  - [ ] Test: un logro ya concedido no se concede dos veces
-  - [ ] Test: `getUnlockedJokerIds()` incluye los jokers base más los desbloqueados
-  - [ ] Test: `getUnlockedDeckIds()` incluye los mazos base más los desbloqueados
-  - [ ] Test: un `DeckType` bloqueado no aparece en `getUnlockedDeckIds()`
-  - [ ] Test: al desbloquear un mazo por logro, `getUnlockedDeckIds()` lo incluye en la siguiente consulta
+- [x] Crear clase `SaveManager`
+  - [x] Test: `save(gameSession)` escribe un JSON válido que incluye el `id` del `DeckType` activo
+  - [x] Test: `load()` reconstruye la sesión exactamente igual (roundNumber, deckType, wallet, jokers activos, niveles de mano)
+  - [x] Test: `load()` usa `DeckType.fromId()` para reconstruir el mazo — no hardcodea valores
+  - [x] Test: `load()` cuando no existe archivo devuelve `Optional.empty()`
+  - [x] Test: `delete()` elimina el archivo de guardado
+- [x] Crear clase `StatsManager`
+  - [x] Test: `updateAfterGame()` incrementa `gamesPlayed`
+  - [x] Test: `updateAfterGame()` actualiza `bestRound` solo si la ronda actual es mayor
+  - [x] Test: `updateAfterGame()` acumula `roundsCompleted`
+  - [x] Test: `updateAfterGame()` actualiza `bestScore` solo si es mayor
+  - [x] Test: `updateAfterGame()` suma a `handsPlayedByType`
+- [x] Crear clase `UnlockService`
+  - [x] Test: logro `REACH_ROUND_5` se concede cuando `bestRound >= 4`
+  - [x] Test: un logro ya concedido no se concede dos veces
+  - [x] Test: `getUnlockedJokerIds()` incluye los jokers base más los desbloqueados
+  - [x] Test: `getUnlockedDeckIds()` incluye los mazos base más los desbloqueados
+  - [x] Test: un `DeckType` bloqueado no aparece en `getUnlockedDeckIds()`
+  - [x] Test: al desbloquear un mazo por logro, `getUnlockedDeckIds()` lo incluye en la siguiente consulta
 
 ---
 
