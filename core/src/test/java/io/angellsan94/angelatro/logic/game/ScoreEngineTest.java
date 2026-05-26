@@ -342,4 +342,39 @@ class ScoreEngineTest {
         assertEquals(scoreWithNull, scoreWithEmpty);
         assertEquals(80, scoreWithNull);
     }
+
+    @Test
+    @DisplayName("Los bonos de DeckType se aplican antes que los jokers (orden: base + bonusDeck + jokers)")
+    void testDeckTypeBonusesAppliedBeforeJokers() {
+        List<Card> playedCards = List.of(
+                new Card(Rank.REY, Suit.HEARTS),
+                new Card(Rank.REY, Suit.DIAMONDS)
+        );
+        List<Card> scoringCards = List.of(
+                new Card(Rank.REY, Suit.HEARTS),
+                new Card(Rank.REY, Suit.DIAMONDS)
+        );
+
+        // Usar POWERED (bonusChips=10) y MULTIBASE (bonusMult=2) para verificar el orden
+        HandEvaluationContext context = new HandEvaluationContext(
+                HandType.PAREJA,
+                playedCards,
+                scoringCards,
+                levelManager,
+                DeckType.POWERED,
+                null,
+                null
+        );
+
+        PairChipsEffect effect = new PairChipsEffect();
+        Joker joker = new Joker("J001", "Matador", "+30 chips si la mano es PAREJA", 4,
+                io.angellsan94.angelatro.logic.jokers.Rarity.COMMON, effect);
+        List<Joker> activeJokers = List.of(joker);
+
+        int score = scoreEngine.calculateTotalScore(context, activeJokers);
+        // chips = 20 (base) + 10 + 10 (reyes) + 10 (bonusDeck) + 30 (joker) = 80
+        // mult = 2 + 0 (bonusMult no aplicado en POWERED) = 2
+        // score = 80 * 2 = 160
+        assertEquals(160, score);
+    }
 }

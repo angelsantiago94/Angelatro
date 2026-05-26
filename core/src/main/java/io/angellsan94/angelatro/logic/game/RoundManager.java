@@ -1,7 +1,11 @@
 package io.angellsan94.angelatro.logic.game;
 
+import io.angellsan94.angelatro.logic.model.Card;
 import io.angellsan94.angelatro.logic.model.Deck;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Gestiona el estado de la ronda actual, incluyendo manos, descartes,
@@ -24,6 +28,7 @@ public class RoundManager {
     private int round;
     private int targetScore;
     private Deck deck;
+    private final List<Card> discardPile;
 
     /**
      * Constructor que inicializa el gestor de ronda.
@@ -34,6 +39,7 @@ public class RoundManager {
         this.round = 0;
         this.targetScore = BASE_TARGET_SCORE;
         this.deck = new Deck();
+        this.discardPile = new ArrayList<>();
     }
 
     /**
@@ -48,6 +54,7 @@ public class RoundManager {
         this.targetScore = calculateTargetScore(roundNumber);
         this.deck = new Deck();
         this.deck.shuffle();
+        this.discardPile.clear();
     }
 
     /**
@@ -149,5 +156,14 @@ public class RoundManager {
      */
     public int getRound() {
         return round;
+    }
+
+    /**
+     * Descarta las cartas jugadas, moviéndolas al pile de descarte.
+     *
+     * @param cards las cartas a descartar
+     */
+    public void discardPlayedCards(List<Card> cards) {
+        discardPile.addAll(cards);
     }
 }

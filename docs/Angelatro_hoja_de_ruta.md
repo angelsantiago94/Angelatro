@@ -139,7 +139,7 @@ Tareas:
   - [x] Test: Carta Alta con As, DeckType POWERED (bonusChips=10) → chips = 5 + 11 + 10 = 26, mult = 1 → score = 26
   - [x] Test: Pareja de Reyes nivel 0, DeckType MULTIBASE (bonusMult=2) → chips = 20+10+10 = 40, mult = 2+2 = 4 → score = 160
   - [x] Test: Pareja de Reyes nivel 3, DeckType STANDARD → chips = 50+10+10 = 70, mult = 5 → score = 350
-  - [ ] Test: los bonos de `DeckType` se aplican **antes** que los jokers (orden: base + bonusDeck + jokers)
+  - [x] Test: los bonos de `DeckType` se aplican **antes** que los jokers (orden: base + bonusDeck + jokers)
   - [x] Test: solo las `scoringCards` aportan chips individuales, no todas las del PlayArea
   - [x] Test: `InvalidPlayAreaSizeException` si `playedCards` está vacía
 - [x] Crear excepción `InvalidPlayAreaSizeException`
@@ -169,8 +169,8 @@ Tareas:
   - [x] **Condición de derrota 1:** `isGameOver()` true si manos = 0 y score < targetScore
   - [x] **Condición de derrota 2:** `isGameOver()` true si mano vacía Y mazo vacío (con manos restantes)
   - [x] Test: reponer mazo al inicio de cada ronda (52 cartas barajadas)
-  - [ ] Test: al robar tras jugar, las cartas del `PlayArea` van al descarte (no vuelven al mazo)
-  - [ ] Test: al agotar el mazo, no se recicla el descarte
+  - [x] Test: al robar tras jugar, las cartas del `PlayArea` van al descarte (no vuelven al mazo)
+  - [x] Test: al agotar el mazo, no se recicla el descarte
 
 ---
 
@@ -283,34 +283,34 @@ Tareas:
 
 ## Fase 10 — Pantallas LibGDX
 
-**Paquete:** `core/screens` y `core/ui`
+**Paquete:** `core/io/angellsan94/angelatro/screens` y `core/io/angellsan94/angelatro/ui`
 
 > A partir de aquí no hay tests JUnit (la UI se verifica manualmente).
 
 ### 10.1. Infraestructura base
-- [ ] Crear clase principal `AngelatroGame extends Game`
-  - [ ] `create()`: configurar `FitViewport(800, 480)`, cargar `BitmapFont`, navegar a `MainMenuScreen`
-  - [ ] `dispose()`: liberar recursos globales
-- [ ] Crear componente `CardView` (rectángulo + texto con rango y palo en color)
+- [x] Crear clase principal `AngelatroGame extends Game`
+  - [x] `create()`: configurar `FitViewport(800, 480)`, cargar `BitmapFont`, navegar a `MainMenuScreen`
+  - [x] `dispose()`: liberar recursos globales
+- [x] Crear componente `CardView` (rectángulo + texto con rango y palo en color)
 
 ### 10.2. MainMenuScreen
-- [ ] Botón "Nueva Partida" → navega a pantalla de selección de mazo
-- [ ] Botón "Continuar" → visible solo si existe `savegame.json`; carga sesión y va a `GameScreen`
-- [ ] Botón "Colección" → navega a `CollectionScreen`
-- [ ] Botón "Estadísticas" → navega a `StatsScreen`
-- [ ] Botón "Hard Reset" → diálogo de confirmación; borra archivos y recarga menú
+- [x] Botón "Nueva Partida" → navega a pantalla de selección de mazo
+- [x] Botón "Continuar" → visible solo si existe `savegame.json`; carga sesión y va a `GameScreen`
+- [x] Botón "Colección" → navega a `CollectionScreen`
+- [x] Botón "Estadísticas" → navega a `StatsScreen`
+- [x] Botón "Hard Reset" → diálogo de confirmación; borra archivos y recarga menú
 
 ### 10.3. Pantalla de selección de mazo
-- [ ] Consultar `UnlockService.getUnlockedDeckIds()` para saber qué mazos mostrar
-- [ ] Muestra solo los mazos desbloqueados con nombre y ventaja (los bloqueados no aparecen)
-- [ ] Botón "Jugar" con el mazo seleccionado → crea `GameSession` con ese `DeckType` y navega a `GameScreen`
+- [x] Consultar `UnlockService.getUnlockedDeckIds()` para saber qué mazos mostrar
+- [x] Muestra solo los mazos desbloqueados con nombre y ventaja (los bloqueados no aparecen)
+- [x] Botón "Jugar" con el mazo seleccionado → crea `GameSession` con ese `DeckType` y navega a `GameScreen`
 
 ### 10.4. GameScreen
-- [ ] HUD superior: puntuación actual / objetivo, ronda, manos restantes, descartes restantes, monedas
+- [x] HUD superior: puntuación actual / objetivo, ronda, manos restantes, descartes restantes, monedas
 - [ ] Mostrar jokers activos (barra lateral o zona inferior)
 - [ ] Mostrar `PlayerHand` con `CardView` pulsables (seleccionar / deseleccionar)
-- [ ] Botón "Jugar mano" (activo solo si hay ≥1 carta seleccionada)
-- [ ] Botón "Descartar" (activo solo si hay ≥1 carta seleccionada y descartes > 0)
+- [x] Botón "Jugar mano" (activo solo si hay ≥1 carta seleccionada)
+- [x] Botón "Descartar" (activo solo si hay ≥1 carta seleccionada y descartes > 0)
 - [ ] Mostrar animación de puntuación al jugar (texto flotante con los puntos conseguidos)
 - [ ] Detectar victoria de ronda → navegar a `ShopScreen`
 - [ ] Detectar derrota → navegar a `GameOverScreen`
@@ -320,20 +320,20 @@ Tareas:
 - [ ] Botón "Comprar" por joker (deshabilitado si saldo insuficiente o límite alcanzado)
 - [ ] Mostrar jokers activos del jugador con botón "Vender" en cada uno
 - [ ] Mostrar 2 mejoras de mano con tipo y precio (6 monedas)
-- [ ] Botón "Siguiente ronda" → actualiza estado y navega a `GameScreen`
+- [x] Botón "Siguiente ronda" → actualiza estado y navega a `GameScreen`
 
 ### 10.6. GameOverScreen
-- [ ] Mostrar ronda alcanzada (destacada)
-- [ ] Mostrar mensaje de nuevo récord si `ronda > bestRound` previo
-- [ ] Mostrar puntuación de la última ronda y acumulada
-- [ ] Botón "Menú principal"
+- [x] Mostrar ronda alcanzada (destacada)
+- [x] Mostrar mensaje de nuevo récord si `ronda > bestRound` previo
+- [x] Mostrar puntuación de la última ronda y acumulada
+- [x] Botón "Menú principal"
 
 ### 10.7. CollectionScreen
-- [ ] Pestaña "Jokers": cuadrícula con todos los jokers (bloqueados en silueta)
-- [ ] Pestaña "Mazos": lista con condición de desbloqueo para los bloqueados
+- [x] Pestaña "Jokers": cuadrícula con todos los jokers (bloqueados en silueta)
+- [x] Pestaña "Mazos": lista con condición de desbloqueo para los bloqueados
 
 ### 10.8. StatsScreen
-- [ ] Mostrar: partidas jugadas, mejor ronda, rondas completadas (total), mejor puntuación en una ronda
+- [x] Mostrar: partidas jugadas, mejor ronda, rondas completadas (total), mejor puntuación en una ronda
 
 ---
 

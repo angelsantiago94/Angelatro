@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -144,5 +146,50 @@ class RoundManagerTest {
         }
 
         assertTrue(roundManager.isGameOver(playerHand, 0));
+    }
+
+    // ==================== DESCARTE ====================
+
+    @Test
+    @DisplayName("Al robar tras jugar, las cartas del PlayArea van al descarte (no vuelven al mazo)")
+    void testPlayAreaCardsGoToDiscardAfterDraw() {
+        roundManager.startRound(0);
+
+        // Sacar cartas del mazo para simular que fueron jugadas
+        io.angellsan94.angelatro.logic.model.Card card1 = roundManager.getDeck().draw();
+        io.angellsan94.angelatro.logic.model.Card card2 = roundManager.getDeck().draw();
+
+        roundManager.discardPlayedCards(List.of(card1, card2));
+
+        // Verificar que están en el descarte
+        assertEquals(2, roundManager.getDiscardPile().size());
+        assertTrue(roundManager.getDiscardPile().contains(card1));
+        assertTrue(roundManager.getDiscardPile().contains(card2));
+
+        // Verificar que ya no están en el mazo
+        assertFalse(roundManager.getDeck().getCards().contains(card1));
+        assertFalse(roundManager.getDeck().getCards().contains(card2));
+    }
+
+    @Test
+    @DisplayName("Al agotar el mazo, no se recicla el descarte")
+    void testDiscardNotRecycledWhenDeckEmpty() {
+        roundManager.startRound(0);
+
+        // Sacar carta del mazo y descartarla
+        io.angellsan94.angelatro.logic.model.Card card1 = roundManager.getDeck().draw();
+        roundManager.discardPlayedCards(List.of(card1));
+
+        // Vaciar el mazo
+        while (!roundManager.getDeck().isEmpty()) {
+            roundManager.getDeck().draw();
+        }
+
+        // Verificar que el descarte sigue teniendo las cartas
+        assertEquals(1, roundManager.getDiscardPile().size());
+        assertTrue(roundManager.getDiscardPile().contains(card1));
+
+        // Verificar que el mazo sigue vacío
+        assertEquals(0, roundManager.getDeck().size());
     }
 }
