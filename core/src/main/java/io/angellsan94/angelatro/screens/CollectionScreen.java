@@ -1,220 +1,133 @@
 package io.angellsan94.angelatro.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.List;
+
 import io.angellsan94.angelatro.AngelatroGame;
+import io.angellsan94.angelatro.logic.jokers.Joker;
+import io.angellsan94.angelatro.logic.jokers.JokerRepository;
 import io.angellsan94.angelatro.logic.model.DeckType;
-import io.angellsan94.angelatro.logic.persistence.UnlockService;
+import io.angellsan94.angelatro.ui.JokerActor;
 
 /**
- * Pantalla de colección.
- * <p>
- * Muestra los jokers y mazos desbloqueados.
- * Usa Scene2D con TextButton y ClickListener según las especificaciones.
- * </p>
- *
- * @author angellsan94
- * @version 2.0
- * @since 1.0
+ * Pantalla de Colección. Muestra jokers y mazos desbloqueados.
+ * Los bloqueados aparecen en silueta con texto "??".
  */
-public class CollectionScreen implements Screen {
+public class CollectionScreen extends BaseScreen {
 
-    private final AngelatroGame game;
-    private final Viewport viewport;
-    private final Stage stage;
-
-    private final UnlockService unlockService;
-
-    private TextButton jokersTab;
-    private TextButton decksTab;
-    private TextButton backButton;
     private Table contentTable;
+    private boolean showingJokers = true;
 
-    private boolean showingJokers;
-
-    /**
-     * Constructor de CollectionScreen.
-     *
-     * @param game la instancia principal del juego
-     */
     public CollectionScreen(AngelatroGame game) {
-        this.game = game;
-        this.viewport = game.getViewport();
-        this.stage = new Stage(viewport);
-
-        this.unlockService = new UnlockService();
-        this.showingJokers = true;
-
-        createUI();
+        super(game);
+        buildUI();
     }
 
-    /**
-     * Crea los elementos de la interfaz de usuario usando Scene2D.
-     */
-    private void createUI() {
-        stage.clear();
+    private void buildUI() {
+        Table root = new Table();
+        root.setFillParent(true);
+        root.top().pad(16);
+        stage.addActor(root);
 
-        // Tabla principal centrada
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.center();
-        stage.addActor(mainTable);
+        // Cabecera con pestañas
+        Table tabs = new Table();
 
-        // Título
-        Label titleLabel = new Label("COLECCIÓN", game.getSkin());
-        titleLabel.setFontScale(1.5f);
-        mainTable.add(titleLabel).padBottom(30).row();
-
-        // Tabla de pestañas
-        Table tabTable = new Table();
-        mainTable.add(tabTable).padBottom(20).row();
-
-        jokersTab = new TextButton("Jokers", game.getSkin());
-        jokersTab.setSize(180, 40);
-        jokersTab.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
+        TextButton tabJokers = new TextButton("Jokers", skin);
+        tabJokers.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) {
                 showingJokers = true;
-                updateTabColors();
-                updateContent();
+                buildContent();
             }
         });
-        tabTable.add(jokersTab).width(180).height(40).padRight(10);
 
-        decksTab = new TextButton("Mazos", game.getSkin());
-        decksTab.setSize(180, 40);
-        decksTab.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
+        TextButton tabDecks = new TextButton("Mazos", skin);
+        tabDecks.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) {
                 showingJokers = false;
-                updateTabColors();
-                updateContent();
+                buildContent();
             }
         });
-        tabTable.add(decksTab).width(180).height(40).padLeft(10);
 
-        // Tabla de contenido
+        tabs.add(tabJokers).width(120).height(36).padRight(8);
+        tabs.add(tabDecks).width(120).height(36);
+        root.add(tabs).padBottom(16).row();
+
+        // Contenido con scroll
         contentTable = new Table();
-        mainTable.add(contentTable).padBottom(20).row();
+        contentTable.top().left();
+        ScrollPane scroll = new ScrollPane(contentTable, skin);
+        root.add(scroll).expand().fill().padBottom(16).row();
 
-        updateTabColors();
-        updateContent();
-
-        // Botón "Volver"
-        backButton = new TextButton("Volver", game.getSkin());
-        backButton.setSize(120, 40);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenuScreen(game));
+        // Volver
+        TextButton btnBack = new TextButton("Volver", skin);
+        btnBack.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) {
+                game.showMainMenu();
             }
         });
-        mainTable.add(backButton).width(120).height(40).padTop(20).row();
+        root.add(btnBack).width(140).height(36);
+
+        buildContent();
     }
 
-    /**
-     * Actualiza los colores de las pestañas.
-     */
-    private void updateTabColors() {
-        if (showingJokers) {
-            jokersTab.setColor(Color.YELLOW);
-            decksTab.setColor(Color.GRAY);
-        } else {
-            jokersTab.setColor(Color.GRAY);
-            decksTab.setColor(Color.YELLOW);
+    private void buildContent() {
+        contentTable.clearChildren();
+        if (showingJokers) buildJokerGrid();
+        else               buildDeckList();
+    }
+
+    private void buildJokerGrid() {
+        List<Joker> allJokers = JokerRepository.getAllJokers();
+
+        int cols = 4;
+        int col  = 0;
+        for (Joker joker : allJokers) {
+            // TODO boolean isUnlocked = unlocked.contains(joker.getId());
+            boolean isUnlocked = true;
+            Table jokerCard = buildJokerCard(joker, isUnlocked);
+            contentTable.add(jokerCard).width(150).height(90).pad(6);
+            if (++col >= cols) { contentTable.row(); col = 0; }
         }
     }
 
-    /**
-     * Actualiza el contenido según la pestaña seleccionada.
-     */
-    private void updateContent() {
-        contentTable.clear();
-
-        if (showingJokers) {
-            Label jokersLabel = new Label("Jokers (TODO)", game.getSkin());
-            contentTable.add(jokersLabel).pad(20);
-            // TODO: Implementar cuadrícula de jokers
+    private Table buildJokerCard(Joker joker, boolean unlocked) {
+        Table card = new Table();
+        card.pad(6);
+        if (unlocked) {
+            card.add(new JokerActor(joker, skin, game.getFont())).row();
+            card.add(new Label(joker.getRarity().name(), skin)).row();
         } else {
-            var unlockedDeckIds = unlockService.getUnlockedDeckIds();
+            card.add(new Label("??", skin)).row();
+            card.add(new Label("Bloqueado", skin)).row();
+        }
+        return card;
+    }
 
-            for (DeckType deck : DeckType.values()) {
-                boolean isUnlocked = unlockedDeckIds.contains(deck.getId());
-                String deckText = deck.name() + " - " + getDeckDescription(deck);
-                if (!isUnlocked) {
-                    deckText += " (BLOQUEADO)";
-                }
+    private void buildDeckList() {
+       //TODO List<String> unlocked = game.getOrchestrator().getUnlockService().getUnlockedDeckIds();
 
-                Label deckLabel = new Label(deckText, game.getSkin());
-                if (!isUnlocked) {
-                    deckLabel.setColor(Color.GRAY);
-                }
-                contentTable.add(deckLabel).pad(10).row();
+        for (DeckType dt : DeckType.values()) {
+            //TODO boolean isUnlocked = unlocked.contains(dt.getId());
+            boolean isUnlocked = true;
+            Table row = new Table();
+            row.pad(8);
+
+            if (isUnlocked) {
+                row.add(new Label(dt.name(), skin, "gold")).left().padRight(16);
+                row.add(new Label("$" + dt.getInitialMoney()
+                    + "  +" + dt.getBonusChips() + " chips"
+                    + "  +" + dt.getBonusMult() + "x", skin)).left();
+            } else {
+                row.add(new Label("?? (bloqueado)", skin)).left().padRight(16);
+                row.add(new Label("Condición de desbloqueo pendiente", skin)).left();
             }
+            contentTable.add(row).left().padBottom(6).row();
         }
-    }
-
-    /**
-     * Obtiene la descripción del mazo.
-     *
-     * @param deck el tipo de mazo
-     * @return la descripción
-     */
-    private String getDeckDescription(DeckType deck) {
-        return switch (deck) {
-            case STANDARD -> "Estándar";
-            case WEALTHY -> "+4 monedas";
-            case POWERED -> "+10 chips";
-            case MULTIBASE -> "+2 mult";
-        };
-    }
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        createUI();
-    }
-
-    @Override
-    public void pause() {
-        // No implementado
-    }
-
-    @Override
-    public void resume() {
-        // No implementado
-    }
-
-    @Override
-    public void hide() {
-        Gdx.input.setInputProcessor(null);
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
     }
 }

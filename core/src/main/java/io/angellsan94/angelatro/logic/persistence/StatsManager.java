@@ -24,6 +24,8 @@ public class StatsManager {
     private int roundsCompleted;
     private int bestScore;
     private final Map<HandType, Integer> handsPlayedByType;
+    private int maxJokersHeld;
+    private int totalScore;
 
     /**
      * Constructor que inicializa el gestor de estadísticas.
@@ -34,11 +36,13 @@ public class StatsManager {
         this.roundsCompleted = 0;
         this.bestScore = 0;
         this.handsPlayedByType = new HashMap<>();
+        this.totalScore = 0;
 
         // Inicializar contador de manos en 0 para todos los tipos
         for (HandType handType : HandType.values()) {
             handsPlayedByType.put(handType, 0);
         }
+        this.maxJokersHeld = 0;
     }
 
     /**

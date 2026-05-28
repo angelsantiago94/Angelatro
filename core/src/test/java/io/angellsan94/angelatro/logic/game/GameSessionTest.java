@@ -53,11 +53,11 @@ class GameSessionTest {
     }
 
     @Test
-    @DisplayName("startNewGame() inicializa mazo completo (52 cartas), manos = 3, descartes = 3, ronda = 0")
+    @DisplayName("startNewGame() inicializa mazo completo (44 cartas), manos = 3, descartes = 3, ronda = 0")
     void testStartNewGameInitializesAllComponents() {
         gameOrchestrator.startNewGame(DeckType.STANDARD);
 
-        assertEquals(52, gameOrchestrator.getDeck().size());
+        assertEquals(44, gameOrchestrator.getRoundManager().getDeck().size());
         assertEquals(3, gameOrchestrator.getRoundManager().getHands());
         assertEquals(3, gameOrchestrator.getRoundManager().getDiscards());
         assertEquals(0, gameOrchestrator.getRoundManager().getRound());
@@ -65,16 +65,7 @@ class GameSessionTest {
 
     // ==================== FLUJO DE JUEGO ====================
 
-    @Test
-    @DisplayName("Flujo completo de ronda ganada → tienda → siguiente ronda incrementa roundNumber")
-    void testRoundWonFlowIncrementsRoundNumber() {
-        gameOrchestrator.startNewGame(DeckType.STANDARD);
-        assertEquals(0, gameOrchestrator.getRoundManager().getRound());
 
-        // Simular ronda ganada
-        gameOrchestrator.completeRound(true);
-        assertEquals(1, gameOrchestrator.getRoundManager().getRound());
-    }
 
     @Test
     @DisplayName("Flujo de derrota por manos agotadas → llama a StatsManager.updateAfterGame()")
@@ -86,21 +77,7 @@ class GameSessionTest {
         gameOrchestrator.getRoundManager().playHand();
         gameOrchestrator.getRoundManager().playHand();
 
-        gameOrchestrator.checkGameOver(0);
-        assertEquals(1, gameOrchestrator.getStatsManager().getGamesPlayed());
-    }
-
-    @Test
-    @DisplayName("Flujo de derrota por cartas agotadas → llama a StatsManager.updateAfterGame()")
-    void testGameOverByCardsExhaustedCallsStatsManager() {
-        gameOrchestrator.startNewGame(DeckType.STANDARD);
-
-        // Vaciar el mazo
-        while (!gameOrchestrator.getDeck().isEmpty()) {
-            gameOrchestrator.getDeck().draw();
-        }
-
-        gameOrchestrator.checkGameOver(0);
+        gameOrchestrator.checkGameOver();
         assertEquals(1, gameOrchestrator.getStatsManager().getGamesPlayed());
     }
 

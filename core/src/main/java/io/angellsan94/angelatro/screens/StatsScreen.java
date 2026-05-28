@@ -1,137 +1,65 @@
 package io.angellsan94.angelatro.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
 import io.angellsan94.angelatro.AngelatroGame;
 import io.angellsan94.angelatro.logic.persistence.StatsManager;
 
 /**
- * Pantalla de estadísticas.
- * <p>
- * Muestra las estadísticas del jugador.
- * Usa Scene2D con TextButton y ClickListener según las especificaciones.
- * </p>
- *
- * @author angellsan94
- * @version 2.0
- * @since 1.0
+ * Pantalla de estadísticas globales del jugador.
+ * ASUME: StatsManager expone getters para cada campo de stats.json.
  */
-public class StatsScreen implements Screen {
+public class StatsScreen extends BaseScreen {
 
-    private final AngelatroGame game;
-    private final Viewport viewport;
-    private final Stage stage;
-
-    private final StatsManager statsManager;
-
-    private TextButton backButton;
-
-    /**
-     * Constructor de StatsScreen.
-     *
-     * @param game la instancia principal del juego
-     */
     public StatsScreen(AngelatroGame game) {
-        this.game = game;
-        this.viewport = game.getViewport();
-        this.stage = new Stage(viewport);
-
-        this.statsManager = new StatsManager();
-
-        createUI();
+        super(game);
+        buildUI();
     }
 
-    /**
-     * Crea los elementos de la interfaz de usuario usando Scene2D.
-     */
-    private void createUI() {
-        stage.clear();
+    private void buildUI() {
+        Table root = new Table();
+        root.setFillParent(true);
+        stage.addActor(root);
 
-        // Tabla principal centrada
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.center();
-        stage.addActor(mainTable);
+        StatsManager stats = game.getOrchestrator().getStatsManager();
 
-        // Título
-        Label titleLabel = new Label("ESTADÍSTICAS", game.getSkin());
-        titleLabel.setFontScale(1.5f);
-        mainTable.add(titleLabel).padBottom(40).row();
+        root.add(new Label("Estadísticas", skin)).padBottom(24).row();
 
-        // Tabla de estadísticas
-        Table statsTable = new Table();
-        mainTable.add(statsTable).padBottom(30).row();
+        // Métrica estrella
+        root.add(stat("Mejor ronda alcanzada",
+            "Ronda " + (stats.getBestRound() + 1), true)).padBottom(8).row();
 
-        Label gamesPlayedLabel = new Label("Partidas jugadas: " + statsManager.getGamesPlayed(), game.getSkin());
-        statsTable.add(gamesPlayedLabel).pad(10).row();
+        root.add(stat("Partidas jugadas",
+            String.valueOf(stats.getGamesPlayed()), false)).padBottom(8).row();
 
-        Label bestRoundLabel = new Label("Mejor ronda: " + statsManager.getBestRound(), game.getSkin());
-        statsTable.add(bestRoundLabel).pad(10).row();
+        root.add(stat("Rondas completadas (total)",
+            String.valueOf(stats.getRoundsCompleted()), false)).padBottom(8).row();
 
-        Label roundsCompletedLabel = new Label("Rondas completadas (total): " + statsManager.getRoundsCompleted(), game.getSkin());
-        statsTable.add(roundsCompletedLabel).pad(10).row();
+        root.add(stat("Mejor puntuación en una ronda",
+            String.valueOf(stats.getBestScore()), false)).padBottom(8).row();
 
-        Label bestScoreLabel = new Label("Mejor puntuación en una ronda: " + statsManager.getBestScore(), game.getSkin());
-        statsTable.add(bestScoreLabel).pad(10).row();
+        root.add(stat("Máximo de jokers en una partida",
+            String.valueOf(stats.getMaxJokersHeld()), false)).padBottom(32).row();
 
-        // Botón "Volver"
-        backButton = new TextButton("Volver", game.getSkin());
-        backButton.setSize(120, 40);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenuScreen(game));
+        TextButton btnBack = new TextButton("Volver", skin);
+        btnBack.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) {
+                game.showMainMenu();
             }
         });
-        mainTable.add(backButton).width(120).height(40).padTop(20).row();
+        root.add(btnBack).width(140).height(36);
     }
 
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        createUI();
-    }
-
-    @Override
-    public void pause() {
-        // No implementado
-    }
-
-    @Override
-    public void resume() {
-        // No implementado
-    }
-
-    @Override
-    public void hide() {
-        Gdx.input.setInputProcessor(null);
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
+    /** Crea una fila de estadística con etiqueta y valor. */
+    private Table stat(String label, String value, boolean highlight) {
+        Table row = new Table();
+        row.add(new Label(label + ": ", skin)).left().padRight(16);
+        row.add(new Label(value, skin, highlight ? "gold" : "default")).left();
+        return row;
     }
 }

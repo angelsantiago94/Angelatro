@@ -24,7 +24,7 @@ import java.util.Optional;
  */
 public class SaveManager {
 
-    private static final String SAVE_FILE_NAME = "save.json";
+    private static final String SAVE_FILE_NAME = "savegame.json";
     private final String saveDirectory;
     private final Gson gson;
 
@@ -56,6 +56,11 @@ public class SaveManager {
         try (FileWriter writer = new FileWriter(savePath.toFile())) {
             gson.toJson(gameSession, writer);
         }
+    }
+
+    public boolean saveExists() {
+        Path savePath = Paths.get(saveDirectory, SAVE_FILE_NAME);
+        return Files.exists(savePath);
     }
 
     /**

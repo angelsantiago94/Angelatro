@@ -48,6 +48,15 @@ public class PlayerHand {
         cards.add(card);
     }
 
+    public void removeCards(List<Card> cards) {
+        this.cards.removeAll(cards);
+    }
+
+    public void clear() {
+        this.cards.clear();
+        this.selectedCards.clear();
+    }
+
     /**
      * Marca una carta como seleccionada para jugar o descartar.
      *

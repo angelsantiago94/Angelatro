@@ -1,200 +1,280 @@
 package io.angellsan94.angelatro.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import io.angellsan94.angelatro.AngelatroGame;
-import io.angellsan94.angelatro.logic.game.GameOrchestrator;
-import io.angellsan94.angelatro.logic.model.Card;
-import io.angellsan94.angelatro.logic.model.DeckType;
-import io.angellsan94.angelatro.ui.CardView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import io.angellsan94.angelatro.AngelatroGame;
+import io.angellsan94.angelatro.exceptions.InvalidPlayAreaSizeException;
+import io.angellsan94.angelatro.logic.game.GameOrchestrator;
+import io.angellsan94.angelatro.logic.game.PlayResult;
+import io.angellsan94.angelatro.logic.jokers.Joker;
+import io.angellsan94.angelatro.logic.model.Card;
+import io.angellsan94.angelatro.ui.CardActor;
+import io.angellsan94.angelatro.ui.JokerActor;
 
 /**
- * Pantalla principal del juego.
- * <p>
- * Muestra el HUD, la mano del jugador, los jokers activos y permite jugar cartas.
- * Usa Scene2D con TextButton y ClickListener según las especificaciones.
- * </p>
+ * Pantalla principal de juego.
  *
- * @author angellsan94
- * @version 2.0
- * @since 1.0
+ * Layout (800x480):
+ *   ┌────────────────────────────── HUD (44px) ──────────────────────────────┐
+ *   │ Jokers  │              Zona de mensaje                                 │
+ *   │ (100px) │                                                              │
+ *   │         │──────── Mano del jugador (cartas) ─────────────────────────  │
+ *   │         │  [Jugar mano]                    [Descartar]                 │
+ *   └─────────┴────────────────────────────────────────────────────────────-─┘
  */
-public class GameScreen implements Screen {
+public class GameScreen extends BaseScreen {
 
-    private final AngelatroGame game;
-    private final Viewport viewport;
-    private final Stage stage;
+    // HUD
+    private Label lblScore;
+    private Label lblRound;
+    private Label lblHands;
+    private Label lblDiscards;
+    private Label lblMoney;
+    private Label lblMessage;
 
-    private final GameOrchestrator gameOrchestrator;
-    private final List<CardView> cardViews;
-    private final List<Card> selectedCards;
+    // Cartas en mano
+    private final List<CardActor> cardActors = new ArrayList<>();
+    private Group handGroup;
 
-    private TextButton playHandButton;
-    private TextButton discardButton;
-    private TextButton backButton;
+    // Jokers laterales
+    private Table jokersTable;
 
-    /**
-     * Constructor de GameScreen.
-     *
-     * @param game la instancia principal del juego
-     * @param deckType el tipo de mazo seleccionado
-     */
-    public GameScreen(AngelatroGame game, DeckType deckType) {
-        this.game = game;
-        this.viewport = game.getViewport();
-        this.stage = new Stage(viewport);
+    // Botones de acción
+    private TextButton btnPlay;
+    private TextButton btnDiscard;
 
-        this.gameOrchestrator = new GameOrchestrator();
-        this.cardViews = new ArrayList<>();
-        this.selectedCards = new ArrayList<>();
+    // Modal de ronda ganada
+    private Dialog roundWonDialog;
 
-        gameOrchestrator.startNewGame(deckType);
-        createUI();
+    public GameScreen(AngelatroGame game) {
+        super(game);
+        buildUI();
+        refreshAll();
     }
 
-    /**
-     * Crea los elementos de la interfaz de usuario usando Scene2D.
-     */
-    private void createUI() {
-        stage.clear();
+    // ── Construcción de UI ───────────────────────────────────────────────
 
-        // Tabla principal centrada
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.center();
-        stage.addActor(mainTable);
+    private void buildUI() {
+        Table root = new Table();
+        root.setFillParent(true);
+        stage.addActor(root);
 
-        // HUD
-        Table hudTable = new Table();
-        mainTable.add(hudTable).padBottom(30).row();
+        // ── Fila HUD ────────────────────────────────────────────────────
+        Table hud = new Table();
+        hud.setBackground(skin.newDrawable("tex-up")); // fondo oscuro leve
 
-        Label scoreLabel = new Label("Puntuación: 0 / " + gameOrchestrator.getRoundManager().getTargetScore(), game.getSkin());
-        hudTable.add(scoreLabel).padRight(15);
+        lblRound    = new Label("", skin);
+        lblScore    = new Label("", skin, "gold");
+        lblHands    = new Label("", skin);
+        lblDiscards = new Label("", skin);
+        lblMoney    = new Label("", skin, "gold");
 
-        Label roundLabel = new Label("Ronda: " + gameOrchestrator.getRoundManager().getRound(), game.getSkin());
-        hudTable.add(roundLabel).padRight(15);
+        hud.add(lblRound).padRight(20);
+        hud.add(new Label("Puntos: ", skin));
+        hud.add(lblScore);
+        hud.row();
+        hud.add(new Label("Manos: ", skin));
+        hud.add(lblHands).padRight(20);
+        hud.add(new Label("Descartes: ", skin));
+        hud.add(lblDiscards).padRight(20);
+        hud.add(new Label("$", skin));
+        hud.add(lblMoney).padRight(20);
 
-        Label handsLabel = new Label("Manos: " + gameOrchestrator.getRoundManager().getHands(), game.getSkin());
-        hudTable.add(handsLabel).padRight(15);
+        root.add(hud).fillX().fillY().height(176).colspan(2).row();
 
-        Label discardsLabel = new Label("Descartes: " + gameOrchestrator.getRoundManager().getDiscards(), game.getSkin());
-        hudTable.add(discardsLabel).padRight(15);
+        // ── Columna izquierda: jokers ────────────────────────────────────
+        jokersTable = new Table();
+        jokersTable.add(new Label("Jokers", skin)).padBottom(6).row();
 
-        Label coinsLabel = new Label("Monedas: " + gameOrchestrator.getWallet().getAmount(), game.getSkin());
-        hudTable.add(coinsLabel);
+        // ── Columna central: mensaje + mano + botones ────────────────────
+        Table center = new Table();
 
-        // Mano del jugador
-        Label handLabel = new Label("Mano del jugador (TODO)", game.getSkin());
-        mainTable.add(handLabel).padBottom(30).row();
+        lblMessage = new Label("Selecciona cartas para jugar", skin);
+        center.add(lblMessage).padTop(16).row();
 
-        // Botones de acción
-        Table buttonTable = new Table();
-        mainTable.add(buttonTable).padTop(20).row();
+        // Zona de cartas (las cartas se posicionan manualmente en handGroup)
+        handGroup = new Group();
+        handGroup.setSize(AngelatroGame.WIDTH - 300f, CardActor.CARD_H + 10f);
+        center.add(handGroup)
+            .width(handGroup.getWidth())
+            .height(handGroup.getHeight())
+            .padBottom(30).row();
 
-        playHandButton = new TextButton("Jugar", game.getSkin());
-        playHandButton.setSize(150, 40);
-        playHandButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (selectedCards.size() >= 1) {
-                    // TODO: Implementar lógica de jugar mano
-                    System.out.println("Jugar mano");
-                }
-            }
+        // Botones
+        Table actions = new Table();
+        btnPlay = new TextButton("Jugar mano", skin, "gold");
+        btnPlay.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) { onPlayHand(); }
         });
-        buttonTable.add(playHandButton).width(150).height(40).padRight(15);
 
-        discardButton = new TextButton("Descartar", game.getSkin());
-        discardButton.setSize(150, 40);
-        discardButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (selectedCards.size() >= 1 && gameOrchestrator.getRoundManager().getDiscards() > 0) {
-                    // TODO: Implementar lógica de descartar
-                    System.out.println("Descartar");
-                }
-            }
+        btnDiscard = new TextButton("Descartar", skin, "danger");
+        btnDiscard.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) { onDiscard(); }
         });
-        buttonTable.add(discardButton).width(150).height(40).padRight(15);
 
-        backButton = new TextButton("Volver", game.getSkin());
-        backButton.setSize(120, 40);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenuScreen(game));
-            }
-        });
-        buttonTable.add(backButton).width(120).height(40).padLeft(15);
+        actions.add(btnPlay).width(360).height(99).padRight(20);
+        actions.add(btnDiscard).width(360).height(99);
+        center.add(actions).row();
 
-        // Crear CardViews para las cartas de la mano
-        // TODO: Implementar cuando PlayerHand esté disponible
+        root.add(jokersTable).width(300).left().padLeft(10).fillY();
+        root.add(center).expand().fill();
     }
 
-    /**
-     * Alterna la selección de una carta.
-     *
-     * @param cardView la carta a alternar
-     */
-    private void toggleCardSelection(CardView cardView) {
-        if (cardView.isSelected()) {
-            cardView.setSelected(false);
-            selectedCards.remove(cardView.getCard());
-        } else {
-            cardView.setSelected(true);
-            selectedCards.add(cardView.getCard());
+    // ── Acciones ─────────────────────────────────────────────────────────
+
+    private void onPlayHand() {
+        List<Card> selected = getSelectedCards();
+        if (selected.isEmpty()) {
+            lblMessage.setText("Selecciona al menos una carta.");
+            return;
+        }
+        if (selected.size() > 5) {
+            lblMessage.setText("Máximo 5 cartas por mano.");
+            return;
+        }
+
+        try {
+            PlayResult result = game.getOrchestrator().playHand(selected);
+            lblMessage.setText("+" + result.getScoreGained()
+                + " pts  [" + handTypeName(result.getHandType().name()) + "]");
+            refreshAll();
+
+            if (result.isRoundWon()) {
+                showRoundWonDialog();
+            } else if (result.isGameOver()) {
+               //TODO game.getOrchestrator().handleGameOver();
+                game.showGameOver();
+            }
+        } catch (InvalidPlayAreaSizeException ex) {
+            lblMessage.setText("Selecciona al menos una carta.");
         }
     }
 
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
+    private void onDiscard() {
+        List<Card> selected = getSelectedCards();
+        if (selected.isEmpty()) {
+            lblMessage.setText("Selecciona cartas para descartar.");
+            return;
+        }
+
+        boolean gameOver = game.getOrchestrator().discardCards(selected);
+        lblMessage.setText("Descartadas " + selected.size() + " carta(s).");
+        refreshAll();
+
+        if (gameOver) {
+            //TODO game.getOrchestrator().handleGameOver();
+            game.showGameOver();
+        }
     }
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    // ── Refresco de UI ───────────────────────────────────────────────────
 
-        stage.act(delta);
-        stage.draw();
+    /** Actualiza HUD, mano y jokers desde el estado del orquestador. */
+    private void refreshAll() {
+        refreshHUD();
+        refreshHand();
+        refreshJokers();
+        updateButtonState();
     }
 
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        createUI();
+    private void refreshHUD() {
+        GameOrchestrator o = game.getOrchestrator();
+        lblRound.setText("Ronda " + (o.getRoundManager().getRound() + 1));
+        lblScore.setText(o.getCurrentScore() + " / " + o.getRoundManager().getTargetScore());
+        lblHands.setText(String.valueOf(o.getRoundManager().getHands()));
+        lblDiscards.setText(String.valueOf(o.getRoundManager().getDiscards()));
+        lblMoney.setText(String.valueOf(o.getWallet().getAmount()));
     }
 
-    @Override
-    public void pause() {
-        // No implementado
+    private void refreshHand() {
+        handGroup.clear();
+        cardActors.clear();
+
+        List<Card> cards = game.getOrchestrator().getPlayerHand().getCards();
+        float gap   = 6f;
+        float total = cards.size() * (CardActor.CARD_W + gap) - gap;
+        float startX = (handGroup.getWidth() - total) / 2f;
+
+        for (int i = 0; i < cards.size(); i++) {
+            CardActor actor = new CardActor(cards.get(i), game.getFont());
+            actor.setPosition(startX + i * (CardActor.CARD_W + gap), 0);
+            cardActors.add(actor);
+            handGroup.addActor(actor);
+        }
     }
 
-    @Override
-    public void resume() {
-        // No implementado
+    private void refreshJokers() {
+        jokersTable.clearChildren();
+        jokersTable.add(new Label("Jokers", skin)).padBottom(6).row();
+
+        for (Joker j : game.getOrchestrator().getJokerManager().getActiveJokers()) {
+            JokerActor jokerActor = new JokerActor(j, skin, game.getFont());
+            jokersTable.add(jokerActor).padBottom(4).row();
+        }
     }
 
-    @Override
-    public void hide() {
-        Gdx.input.setInputProcessor(null);
+    private void updateButtonState() {
+        GameOrchestrator o = game.getOrchestrator();
+        btnPlay.setDisabled(o.getRoundManager().getHands() <= 0);
+        btnDiscard.setDisabled(o.getRoundManager().getDiscards() <= 0);
     }
 
-    @Override
-    public void dispose() {
-        stage.dispose();
+    // ── Helpers ──────────────────────────────────────────────────────────
+
+    private List<Card> getSelectedCards() {
+        return cardActors.stream()
+            .filter(CardActor::isSelected)
+            .map(CardActor::getCard)
+            .collect(Collectors.toList());
+    }
+
+    /** Traduce el nombre del enum HandType a texto legible en español. */
+    private String handTypeName(String enumName) {
+        return switch (enumName) {
+            case "HIGH_CARD"       -> "Carta Alta";
+            case "PAIR"            -> "Pareja";
+            case "TWO_PAIR"        -> "Doble Pareja";
+            case "THREE_OF_A_KIND" -> "Trío";
+            case "STRAIGHT"        -> "Escalera";
+            case "FLUSH"           -> "Color";
+            case "FULL_HOUSE"      -> "Full House";
+            case "FOUR_OF_A_KIND"  -> "Póker";
+            case "STRAIGHT_FLUSH"  -> "Escalera de Color";
+            case "ROYAL_FLUSH"     -> "Escalera Real";
+            default                -> enumName;
+        };
+    }
+
+    /**
+     * Muestra un modal anunciando que se ha ganado la ronda.
+     * El modal contiene un botón para continuar a la tienda.
+     */
+    private void showRoundWonDialog() {
+        if (roundWonDialog == null) {
+            roundWonDialog = new Dialog("¡Ronda Ganada!", skin) {
+                @Override
+                protected void result(Object object) {
+                    // Al cerrar el dialog, aplicar ganancias y mostrar tienda
+                    game.getOrchestrator().applyRoundEarnings();
+                    game.showShop();
+                }
+            };
+
+            TextButton btnContinue = new TextButton("Ir a la Tienda", skin, "gold");
+            roundWonDialog.button(btnContinue);
+            roundWonDialog.text("¡Has alcanzado el objetivo de puntuación!\n\nContinúa a la tienda para mejorar tu mazo.");
+        }
+
+        roundWonDialog.show(stage);
     }
 }

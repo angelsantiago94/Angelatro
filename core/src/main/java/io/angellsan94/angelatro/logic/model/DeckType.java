@@ -34,11 +34,11 @@ public enum DeckType {
 
     /**
      * Configuración para partidas con bonus de chips elevado.
-     * - Saldo inicial: 4
+     * - Saldo inicial: 2
      * - Bonus chips: 10
      * - Bonus mult: 0
      */
-    POWERED(4, 10, 0, "POWERED"),
+    POWERED(2, 10, 0, "POWERED"),
 
     /**
      * Configuración para partidas con bonus de multiplicador elevado.

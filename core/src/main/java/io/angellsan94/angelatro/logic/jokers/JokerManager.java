@@ -46,19 +46,14 @@ public class JokerManager {
      * Vende un joker activo, eliminándolo de la lista y devolviendo la mitad de su precio.
      *
      * @param joker  el joker a vender
-     * @param wallet el monedero donde se añadirá el reembolso
-     * @return el reembolso (floor(precio / 2))
      * @throws IllegalArgumentException si el joker no está activo
      */
-    public int sell(Joker joker, Wallet wallet) {
+    public void remove(Joker joker) {
         if (!activeJokers.contains(joker)) {
             throw new IllegalArgumentException("El joker no está activo");
         }
 
-        int refund = joker.getPrice() / 2;
         activeJokers.remove(joker);
-        wallet.earn(refund);
-        return refund;
     }
 
     /**

@@ -2,133 +2,116 @@ package io.angellsan94.angelatro;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
+import io.angellsan94.angelatro.logic.game.GameOrchestrator;
+import io.angellsan94.angelatro.screens.CollectionScreen;
+import io.angellsan94.angelatro.screens.DeckSelectionScreen;
+import io.angellsan94.angelatro.screens.GameOverScreen;
+import io.angellsan94.angelatro.screens.GameScreen;
+import io.angellsan94.angelatro.screens.MainMenuScreen;
+import io.angellsan94.angelatro.screens.ShopScreen;
+import io.angellsan94.angelatro.screens.StatsScreen;
+import io.angellsan94.angelatro.ui.CardActor;
+import io.angellsan94.angelatro.ui.JokerActor;
 
 /**
- * Clase principal del juego Angelatro.
- * <p>
- * Extiende Game de LibGDX y gestiona el ciclo de vida del juego,
- * incluyendo la configuración del viewport, carga de recursos y navegación entre pantallas.
- * </p>
+ * Clase principal de LibGDX. Punto de entrada de la aplicación.
  *
- * @author angellsan94
- * @version 1.0
- * @since 1.0
+ * Responsabilidades:
+ *   - Crear y compartir recursos globales (batch, font, viewport).
+ *   - Mantener el GameOrchestrator como estado de partida.
+ *   - Centralizar la navegación entre pantallas.
  */
 public class AngelatroGame extends Game {
 
-    private static final int SCREEN_WIDTH = 1920;
-    private static final int SCREEN_HEIGHT = 1080;
+    public static final int WIDTH  = 1920;
+    public static final int HEIGHT = 1080;
 
-    private SpriteBatch spriteBatch;
-    private BitmapFont font;
-    private Viewport viewport;
-    private Skin skin;
+    // Recursos compartidos entre pantallas (se crean una sola vez)
+    private SpriteBatch  batch;
+    private BitmapFont   font;
+    private FitViewport  viewport;
+
+    // Estado de juego compartido
+    private GameOrchestrator orchestrator;
+
+    // ── Ciclo de vida LibGDX ─────────────────────────────────────────────
 
     @Override
     public void create() {
-        // Configurar viewport con ajuste de pantalla
-        viewport = new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch      = new SpriteBatch();
+        font       =  new BitmapFont(Gdx.files.internal("fonts/font-export.fnt"));
+        font.getData().setScale(1.5f);
+        viewport   = new FitViewport(WIDTH, HEIGHT);
+        orchestrator = new GameOrchestrator();
 
-        // Cargar recursos globales
-        spriteBatch = new SpriteBatch();
-        font = new BitmapFont();
-        font.getData().setScale(3.5f);
+        CardActor.initTextures();   // texturas compartidas de cartas
+        JokerActor.initTextures();  // texturas compartidas de jokers
 
-        // Crear Skin programático para Scene2D
-        skin = new Skin();
-        skin.add("default", font);
+        showMainMenu();
+    }
 
-        // Crear colores
-        skin.add("white", Color.WHITE);
-        skin.add("black", Color.BLACK);
-        skin.add("red", Color.RED);
-        skin.add("green", Color.GREEN);
-        skin.add("blue", Color.BLUE);
-        skin.add("gray", Color.GRAY);
-        skin.add("yellow", Color.YELLOW);
+    @Override
+    public void render() {
+        super.render();             // delega en la pantalla activa
+    }
 
-        // Crear estilo de TextButton
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font;
-        textButtonStyle.fontColor = Color.WHITE;
-        textButtonStyle.downFontColor = Color.WHITE;
-        skin.add("default", textButtonStyle);
-
-        // Crear estilo de Label
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-        skin.add("default", labelStyle);
-
-
-        // Navegar a pantalla principal
-        setScreen(new io.angellsan94.angelatro.screens.MainMenuScreen(this));
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+        if (getScreen() != null) getScreen().resize(width, height);
     }
 
     @Override
     public void dispose() {
-        // Liberar recursos globales
-        if (spriteBatch != null) {
-            spriteBatch.dispose();
-        }
-        if (font != null) {
-            font.dispose();
-        }
-        if (skin != null) {
-            skin.dispose();
-        }
-        if (screen != null) {
-            screen.dispose();
-        }
+        if (getScreen() != null) getScreen().dispose();
+        CardActor.disposeTextures();
+        JokerActor.disposeTextures();
+        batch.dispose();
+        font.dispose();
     }
 
-    /**
-     * Obtiene el SpriteBatch global.
-     *
-     * @return el SpriteBatch
-     */
-    public SpriteBatch getSpriteBatch() {
-        return spriteBatch;
+    // ── Navegación ───────────────────────────────────────────────────────
+
+    public void showMainMenu() {
+        setScreen(new MainMenuScreen(this));
     }
 
-    /**
-     * Obtiene la fuente global.
-     *
-     * @return la BitmapFont
-     */
-    public BitmapFont getFont() {
-        return font;
+    public void showDeckSelection() {
+        setScreen(new DeckSelectionScreen(this));
     }
 
-    /**
-     * Obtiene el viewport global.
-     *
-     * @return el Viewport
-     */
-    public Viewport getViewport() {
-        return viewport;
+    /** Inicia la pantalla de juego. El orquestador ya debe tener una partida activa. */
+    public void showGame() {
+        setScreen(new GameScreen(this));
     }
 
-    /**
-     * Obtiene el Skin global para Scene2D.
-     *
-     * @return el Skin
-     */
-    public Skin getSkin() {
-        return skin;
+    /** Prepara el contenido de la tienda y navega a ella. */
+    public void showShop() {
+        orchestrator.prepareShop();      // genera jokers y mejoras
+        setScreen(new ShopScreen(this));
     }
+
+    public void showGameOver() {
+        setScreen(new GameOverScreen(this));
+    }
+
+    public void showCollection() {
+        setScreen(new CollectionScreen(this));
+    }
+
+    public void showStats() {
+        setScreen(new StatsScreen(this));
+    }
+
+    // ── Getters de recursos ──────────────────────────────────────────────
+
+    public SpriteBatch      getBatch()        { return batch; }
+    public BitmapFont       getFont()         { return font; }
+    public FitViewport      getViewport()     { return viewport; }
+    public GameOrchestrator getOrchestrator() { return orchestrator; }
 }
+

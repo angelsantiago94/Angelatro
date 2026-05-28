@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests unitarios para la clase {@link DeckType}.
- * 
+ *
  * @since 1.0
  */
 class DeckTypeTest {
@@ -25,7 +25,7 @@ class DeckTypeTest {
         @DisplayName("STANDARD debe tener saldo inicial de 4, bonusChips de 0 y bonusMult de 0")
         void testStandardValues() {
             DeckType deckType = DeckType.STANDARD;
-            
+
             assertEquals(4, deckType.getInitialMoney(), "Saldo inicial de STANDARD debe ser 4");
             assertEquals(0, deckType.getBonusChips(), "Bonus chips de STANDARD debe ser 0");
             assertEquals(0, deckType.getBonusMult(), "Bonus mult de STANDARD debe ser 0");
@@ -35,18 +35,18 @@ class DeckTypeTest {
         @DisplayName("WEALTHY debe tener saldo inicial de 8, bonusChips de 0 y bonusMult de 0")
         void testWealthyValues() {
             DeckType deckType = DeckType.WEALTHY;
-            
+
             assertEquals(8, deckType.getInitialMoney(), "Saldo inicial de WEALTHY debe ser 8");
             assertEquals(0, deckType.getBonusChips(), "Bonus chips de WEALTHY debe ser 0");
             assertEquals(0, deckType.getBonusMult(), "Bonus mult de WEALTHY debe ser 0");
         }
 
         @Test
-        @DisplayName("POWERED debe tener saldo inicial de 4, bonusChips de 10 y bonusMult de 0")
+        @DisplayName("POWERED debe tener saldo inicial de 2, bonusChips de 10 y bonusMult de 0")
         void testPoweredValues() {
             DeckType deckType = DeckType.POWERED;
-            
-            assertEquals(4, deckType.getInitialMoney(), "Saldo inicial de POWERED debe ser 4");
+
+            assertEquals(2, deckType.getInitialMoney(), "Saldo inicial de POWERED debe ser 2");
             assertEquals(10, deckType.getBonusChips(), "Bonus chips de POWERED debe ser 10");
             assertEquals(0, deckType.getBonusMult(), "Bonus mult de POWERED debe ser 0");
         }
@@ -55,7 +55,7 @@ class DeckTypeTest {
         @DisplayName("MULTIBASE debe tener saldo inicial de 4, bonusChips de 0 y bonusMult de 2")
         void testMultiBaseValues() {
             DeckType deckType = DeckType.MULTIBASE;
-            
+
             assertEquals(4, deckType.getInitialMoney(), "Saldo inicial de MULTIBASE debe ser 4");
             assertEquals(0, deckType.getBonusChips(), "Bonus chips de MULTIBASE debe ser 0");
             assertEquals(2, deckType.getBonusMult(), "Bonus mult de MULTIBASE debe ser 2");
@@ -149,7 +149,7 @@ class DeckTypeTest {
                 () -> DeckType.fromId("INVALID_ID"),
                 "fromId('INVALID_ID') debe lanzar IllegalArgumentException"
             );
-            assertTrue(exception.getMessage().contains("No existe un DeckType"), 
+            assertTrue(exception.getMessage().contains("No existe un DeckType"),
                 "El mensaje debe indicar que no existe el DeckType");
         }
     }
@@ -204,17 +204,17 @@ class DeckTypeTest {
         @DisplayName("STANDARD debe ser inmutable - getInitialMoney debe retornar constante")
         void testStandardIsImmutable() {
             DeckType standard = DeckType.STANDARD;
-            
+
             // Intento de modificar (debería fallar en compilación, pero verificamos el valor)
             int initialMoney = standard.getInitialMoney();
             assertEquals(4, initialMoney, "getInitialMoney debe retornar valor constante");
-            
+
             int bonusChips = standard.getBonusChips();
             assertEquals(0, bonusChips, "getBonusChips debe retornar valor constante");
-            
+
             int bonusMult = standard.getBonusMult();
             assertEquals(0, bonusMult, "getBonusMult debe retornar valor constante");
-            
+
             assertEquals("STANDARD", standard.getId(), "getId debe retornar valor constante");
         }
     }
@@ -231,7 +231,7 @@ class DeckTypeTest {
             DeckType wealthy = DeckType.fromId("WEALTHY");
             DeckType powered = DeckType.fromId("POWERED");
             DeckType multiBase = DeckType.fromId("MULTIBASE");
-            
+
             // Verificar que los valores obtenidos son los correctos
             assertEquals(DeckType.STANDARD, standard);
             assertEquals(DeckType.WEALTHY, wealthy);
@@ -246,7 +246,7 @@ class DeckTypeTest {
             Optional<DeckType> wealthyOpt = DeckType.fromIdOptional("WEALTHY");
             Optional<DeckType> poweredOpt = DeckType.fromIdOptional("POWERED");
             Optional<DeckType> multiBaseOpt = DeckType.fromIdOptional("MULTIBASE");
-            
+
             assertTrue(standardOpt.isPresent());
             assertTrue(wealthyOpt.isPresent());
             assertTrue(poweredOpt.isPresent());

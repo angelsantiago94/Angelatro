@@ -100,9 +100,7 @@ class JokerManagerTest {
         Joker joker = new Joker("J001", "Matador", "Description", 4, Rarity.COMMON, dummyEffect);
         jokerManager.add(joker);
 
-        int refund = jokerManager.sell(joker, wallet);
-        assertEquals(2, refund); // floor(4 / 2) = 2
-        assertEquals(6, wallet.getAmount()); // 4 inicial + 2 reembolso
+        jokerManager.remove(joker);
         assertEquals(0, jokerManager.getActiveJokers().size());
     }
 
@@ -123,6 +121,6 @@ class JokerManagerTest {
 
         Joker joker = new Joker("J001", "Matador", "Description", 4, Rarity.COMMON, dummyEffect);
 
-        assertThrows(IllegalArgumentException.class, () -> jokerManager.sell(joker, wallet));
+        assertThrows(IllegalArgumentException.class, () -> jokerManager.remove(joker));
     }
 }

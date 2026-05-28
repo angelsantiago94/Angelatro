@@ -1,7 +1,9 @@
 package io.angellsan94.angelatro.logic.game;
 
+import io.angellsan94.angelatro.logic.economy.Wallet;
 import io.angellsan94.angelatro.logic.model.Card;
 import io.angellsan94.angelatro.logic.model.DeckType;
+import io.angellsan94.angelatro.logic.stats.GameStats;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ public record HandEvaluationContext(
         List<Card> scoringCards,
         HandLevelManager levelManager,
         DeckType deckType,
-        Object globalStats,
-        Object wallet
+        GameStats globalStats,
+        Wallet wallet
 ) {
 }

@@ -1,152 +1,58 @@
 package io.angellsan94.angelatro.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
 import io.angellsan94.angelatro.AngelatroGame;
-import io.angellsan94.angelatro.logic.game.GameOrchestrator;
-import io.angellsan94.angelatro.logic.persistence.StatsManager;
 
 /**
- * Pantalla de fin de juego.
- * <p>
- * Muestra la ronda alcanzada, puntuaciones y permite volver al menú principal.
- * Usa Scene2D con TextButton y ClickListener según las especificaciones.
- * </p>
- *
- * @author angellsan94
- * @version 2.0
- * @since 1.0
+ * Pantalla de Game Over. Se muestra cuando el jugador no alcanza
+ * la puntuación objetivo. Destaca la ronda alcanzada como métrica estrella.
  */
-public class GameOverScreen implements Screen {
+public class GameOverScreen extends BaseScreen {
 
-    private final AngelatroGame game;
-    private final Viewport viewport;
-    private final Stage stage;
-
-    private final GameOrchestrator gameOrchestrator;
-    private final StatsManager statsManager;
-
-    private final int roundReached;
-    private final boolean isNewRecord;
-
-    private TextButton mainMenuButton;
-
-    /**
-     * Constructor de GameOverScreen.
-     *
-     * @param game la instancia principal del juego
-     * @param gameOrchestrator el orquestador del juego
-     */
-    public GameOverScreen(AngelatroGame game, GameOrchestrator gameOrchestrator) {
-        this.game = game;
-        this.viewport = game.getViewport();
-        this.stage = new Stage(viewport);
-
-        this.gameOrchestrator = gameOrchestrator;
-        this.statsManager = new StatsManager();
-
-        this.roundReached = gameOrchestrator.getRoundManager().getRound();
-        this.isNewRecord = roundReached > statsManager.getBestRound();
-
-        createUI();
+    public GameOverScreen(AngelatroGame game) {
+        super(game);
+        buildUI();
     }
 
-    /**
-     * Crea los elementos de la interfaz de usuario usando Scene2D.
-     */
-    private void createUI() {
-        stage.clear();
+    private void buildUI() {
+        Table root = new Table();
+        root.setFillParent(true);
+        stage.addActor(root);
 
-        // Tabla principal centrada
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.center();
-        stage.addActor(mainTable);
+        int round        = game.getOrchestrator().getRoundManager().getRound() + 1;
+        int score        = game.getOrchestrator().getCurrentScore();
+        // ASUME: StatsManager expone getBestRound() y getLastRoundScore()
+        boolean isRecord = game.getOrchestrator().isNewRecord();
 
-        // Título
-        Label titleLabel = new Label("GAME OVER", game.getSkin());
-        titleLabel.setFontScale(2f);
-        titleLabel.setColor(Color.RED);
-        mainTable.add(titleLabel).padBottom(40).row();
+        root.add(new Label("PARTIDA TERMINADA", skin)).padBottom(8).row();
 
-        // Tabla de información
-        Table infoTable = new Table();
-        mainTable.add(infoTable).padBottom(30).row();
+        // Ronda alcanzada — métrica estrella
+        Label lblRound = new Label("Ronda " + round, skin, "gold");
+        root.add(lblRound).padBottom(4).row();
 
-        Label roundLabel = new Label("Ronda alcanzada: " + roundReached, game.getSkin());
-        infoTable.add(roundLabel).pad(10).row();
-
-        if (isNewRecord) {
-            Label recordLabel = new Label("¡NUEVO RÉCORD!", game.getSkin());
-            recordLabel.setFontScale(1.5f);
-            recordLabel.setColor(Color.YELLOW);
-            infoTable.add(recordLabel).pad(10).row();
+        if (isRecord) {
+            root.add(new Label("¡Nuevo récord personal!", skin, "gold")).padBottom(12).row();
         }
 
-        Label bestRoundLabel = new Label("Mejor ronda: " + statsManager.getBestRound(), game.getSkin());
-        infoTable.add(bestRoundLabel).pad(10).row();
+        root.add(new Label("Puntuación última ronda: " + score, skin)).padBottom(4).row();
 
-        Label gamesPlayedLabel = new Label("Partidas jugadas: " + statsManager.getGamesPlayed(), game.getSkin());
-        infoTable.add(gamesPlayedLabel).pad(10).row();
+        // ASUME: StatsManager.getTotalScore() acumula el score de todas las partidas
+        // Si no existe este campo, omite esta línea.
+        // root.add(new Label("Puntuación total: " + ..., skin)).padBottom(20).row();
+        root.add(new Label("", skin)).padBottom(20).row(); // spacer
 
-        // Botón "Menú Principal"
-        mainMenuButton = new TextButton("Menú Principal", game.getSkin());
-        mainMenuButton.setSize(200, 50);
-        mainMenuButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenuScreen(game));
+        TextButton btnMenu = new TextButton("Menú principal", skin);
+        btnMenu.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) {
+                game.showMainMenu();
             }
         });
-        mainTable.add(mainMenuButton).width(200).height(50).padTop(20).row();
-    }
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        createUI();
-    }
-
-    @Override
-    public void pause() {
-        // No implementado
-    }
-
-    @Override
-    public void resume() {
-        // No implementado
-    }
-
-    @Override
-    public void hide() {
-        Gdx.input.setInputProcessor(null);
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
+        root.add(btnMenu).width(200).height(44);
     }
 }

@@ -1,223 +1,102 @@
 package io.angellsan94.angelatro.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
 import io.angellsan94.angelatro.AngelatroGame;
 import io.angellsan94.angelatro.logic.model.DeckType;
-import io.angellsan94.angelatro.logic.persistence.UnlockService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Pantalla de selección de mazo.
- * <p>
- * Muestra los mazos desbloqueados y permite seleccionar uno para iniciar una partida.
- * Usa Scene2D con TextButton y ClickListener según las especificaciones.
- * </p>
- *
- * @author angellsan94
- * @version 2.0
- * @since 1.0
+ * Pantalla de selección de mazo antes de iniciar una partida.
+ * Solo muestra los mazos desbloqueados según UnlockService.
  */
-public class DeckSelectionScreen implements Screen {
+public class DeckSelectionScreen extends BaseScreen {
 
-    private final AngelatroGame game;
-    private final Viewport viewport;
-    private final Stage stage;
+    private DeckType selected;
+    private TextButton btnPlay;
+    private Label      lblDesc;
 
-    private final List<DeckType> unlockedDecks;
-    private final List<TextButton> deckButtons;
-    private TextButton backButton;
-    private TextButton playButton;
-    private DeckType selectedDeck;
-
-    /**
-     * Constructor de DeckSelectionScreen.
-     *
-     * @param game la instancia principal del juego
-     */
     public DeckSelectionScreen(AngelatroGame game) {
-        this.game = game;
-        this.viewport = game.getViewport();
-        this.stage = new Stage(viewport);
-
-        this.unlockedDecks = new ArrayList<>();
-        this.deckButtons = new ArrayList<>();
-
-        loadUnlockedDecks();
-        createUI();
+        super(game);
+        buildUI();
     }
 
-    /**
-     * Carga los mazos desbloqueados.
-     */
-    private void loadUnlockedDecks() {
-        UnlockService unlockService = new UnlockService();
-        var unlockedDeckIds = unlockService.getUnlockedDeckIds();
+    private void buildUI() {
+        Table root = new Table();
+        root.setFillParent(true);
+        stage.addActor(root);
+        Label labelTitle = new Label("Elige tu mazo", skin);
+        labelTitle.setFontScale(2f);
+        root.add(labelTitle).padBottom(24).row();
 
-        for (String deckId : unlockedDeckIds) {
-            DeckType.fromIdOptional(deckId).ifPresent(unlockedDecks::add);
+        // Fila de mazos disponibles
+        Table mazosRow = new Table();
+
+        // ASUME: UnlockService.getUnlockedDeckTypes() devuelve List<DeckType>
+        // Si no existe, usa DeckType.values() como fallback temporal.
+        for (DeckType dt : DeckType.values()) {
+            mazosRow.add(buildDeckCard(dt)).width(420).height(132).padRight(20);
         }
+        root.add(mazosRow).padBottom(20).row();
 
-        if (unlockedDecks.isEmpty()) {
-            // Si no hay mazos desbloqueados, mostrar STANDARD por defecto
-            unlockedDecks.add(DeckType.STANDARD);
-        }
-    }
+        // Descripción del mazo seleccionado
+        lblDesc = new Label("Selecciona un mazo", skin);
+        root.add(lblDesc).padBottom(24).row();
 
-    /**
-     * Crea los elementos de la interfaz de usuario usando Scene2D.
-     */
-    private void createUI() {
-        stage.clear();
+        // Botones de navegación
+        Table buttons = new Table();
 
-        // Tabla principal centrada
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.center();
-        stage.addActor(mainTable);
-
-        // Título
-        Label titleLabel = new Label("Selecciona tu mazo", game.getSkin());
-        titleLabel.setFontScale(1.5f);
-        mainTable.add(titleLabel).padBottom(40).row();
-
-        // Botones de mazo
-        float buttonWidth = 350;
-        float buttonHeight = 60;
-        float spacing = 15;
-
-        for (int i = 0; i < unlockedDecks.size(); i++) {
-            DeckType deck = unlockedDecks.get(i);
-            String deckName = deck.name() + " - " + getDeckDescription(deck);
-
-            TextButton deckButton = new TextButton(deckName, game.getSkin());
-            deckButton.setSize(buttonWidth, buttonHeight);
-            
-            final DeckType currentDeck = deck;
-            deckButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    selectDeck(currentDeck);
-                }
-            });
-            
-            deckButtons.add(deckButton);
-            mainTable.add(deckButton).width(buttonWidth).height(buttonHeight).padBottom(spacing).row();
-        }
-
-        // Botón "Jugar" (inicialmente oculto)
-        playButton = new TextButton("Jugar", game.getSkin());
-        playButton.setSize(200, 50);
-        playButton.setVisible(false);
-        playButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (selectedDeck != null) {
-                    game.setScreen(new GameScreen(game, selectedDeck));
-                }
+        TextButton btnBack = new TextButton("Volver", skin);
+        btnBack.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) {
+                game.showMainMenu();
             }
         });
-        mainTable.add(playButton).width(200).height(50).padTop(20).row();
 
-        // Botón "Volver"
-        backButton = new TextButton("Volver", game.getSkin());
-        backButton.setSize(120, 40);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenuScreen(game));
+        btnPlay = new TextButton("Jugar", skin, "gold");
+        btnPlay.setDisabled(true);
+        btnPlay.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) {
+                if (selected != null) startGame();
             }
         });
-        mainTable.add(backButton).width(120).height(40).padTop(20).row();
+
+        buttons.add(btnBack).width(210).height(66).padRight(20);
+        buttons.add(btnPlay).width(210).height(66);
+        root.add(buttons);
     }
 
-    /**
-     * Selecciona un mazo y actualiza la UI.
-     *
-     * @param deck el mazo seleccionado
-     */
-    private void selectDeck(DeckType deck) {
-        selectedDeck = deck;
+    private TextButton buildDeckCard(DeckType dt) {
+        String label = dt.name() + "\n$" + dt.getInitialMoney()
+            + "  +" + dt.getBonusChips() + "ch"
+            + "  +" + dt.getBonusMult() + "x";
 
-        // Actualizar colores de los botones
-        for (int i = 0; i < Math.min(deckButtons.size(), unlockedDecks.size()); i++) {
-            TextButton button = deckButtons.get(i);
-            DeckType buttonDeck = unlockedDecks.get(i);
-
-            if (buttonDeck == deck) {
-                button.setColor(Color.YELLOW);
-            } else {
-                button.setColor(Color.WHITE);
+        TextButton btn = new TextButton(label, skin);
+        btn.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent e, float x, float y) {
+                selected = dt;
+                btnPlay.setDisabled(false);
+                lblDesc.setText(deckDescription(dt));
             }
-        }
-
-        // Mostrar botón "Jugar"
-        playButton.setVisible(true);
+        });
+        return btn;
     }
 
-    /**
-     * Obtiene la descripción del mazo.
-     *
-     * @param deck el tipo de mazo
-     * @return la descripción
-     */
-    private String getDeckDescription(DeckType deck) {
-        return switch (deck) {
-            case STANDARD -> "Estándar";
-            case WEALTHY -> "+4 monedas";
-            case POWERED -> "+10 chips";
-            case MULTIBASE -> "+2 mult";
+    private String deckDescription(DeckType dt) {
+        return switch (dt) {
+            case STANDARD   -> "Estándar — sin bonificaciones especiales.";
+            case WEALTHY    -> "Acaudalado — empieza con más dinero.";
+            case POWERED    -> "Potenciado — +10 chips extra por mano.";
+            case MULTIBASE  -> "Multibase — +2 mult extra por mano.";
         };
     }
 
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        createUI();
-    }
-
-    @Override
-    public void pause() {
-        // No implementado
-    }
-
-    @Override
-    public void resume() {
-        // No implementado
-    }
-
-    @Override
-    public void hide() {
-        Gdx.input.setInputProcessor(null);
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
+    private void startGame() {
+        game.getOrchestrator().startNewGame(selected);
+        game.showGame();
     }
 }
